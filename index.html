@@ -2,352 +2,551 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Admin Panel – Waliko Car Hire</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;background:#f0f4ff;color:#333;min-height:100vh;display:flex;flex-direction:column;}
-    /* HEADER */
-    header{background:linear-gradient(135deg,#1464dd 0%,#0d47a1 100%);color:#fff;padding:10px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;z-index:200;box-shadow:0 3px 15px rgba(20,100,221,0.35);}
-    header h1{font-size:1.1em;font-weight:700;}
-    nav{display:flex;flex-wrap:wrap;gap:6px;}
-    nav button{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:6px 12px;border-radius:25px;font-size:0.76em;font-family:'Poppins',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;}
-    nav button:hover,nav button.active{background:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.6);}
-    nav button.danger{border-color:rgba(255,100,100,0.4);color:#ffaaaa;}
-    nav button.danger:hover{background:rgba(255,80,80,0.2);}
-    /* LAYOUT */
-    .layout{display:flex;flex:1;}
-    /* SIDEBAR */
-    .sidebar{width:200px;background:#fff;border-right:1px solid rgba(20,100,221,0.08);padding:12px 0;flex-shrink:0;min-height:calc(100vh - 47px);}
-    .sb-section{font-size:0.68em;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#1464dd;padding:12px 16px 4px;}
-    .sb-item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:0.82em;color:#555;font-weight:500;cursor:pointer;transition:background 0.15s;gap:6px;}
-    .sb-item:hover{background:#f0f4ff;}
-    .sb-item.active{background:#f0f4ff;color:#1464dd;font-weight:600;border-left:3px solid #1464dd;}
-    .sb-badge{background:#e74c3c;color:#fff;font-size:0.7em;padding:1px 6px;border-radius:99px;font-weight:700;margin-left:auto;}
-    /* MAIN */
-    .main{flex:1;padding:20px;overflow-x:hidden;}
+    :root{
+      --blue:#1464dd;--blue-dark:#0d47a1;--blue-bg:#f0f4ff;
+      --green:#27ae60;--green-bg:#e6f9ee;--green-border:#a8ddb9;
+      --red:#c0392b;--red-bg:#fff0f0;--red-border:#ffcccc;
+      --orange:#b35c00;--orange-bg:#fff5e6;--orange-border:#ffc87a;
+      --gray:#888;--border:#f0f4ff;
+      --header-h:52px;--bottom-nav-h:60px;
+    }
+
+    body{font-family:'Poppins',sans-serif;background:var(--blue-bg);color:#333;min-height:100vh;display:flex;flex-direction:column;}
+
+    /* ── HEADER ── */
+    header{
+      background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+      color:#fff;padding:0 16px;
+      display:flex;align-items:center;justify-content:space-between;
+      height:var(--header-h);
+      position:sticky;top:0;z-index:300;
+      box-shadow:0 3px 15px rgba(20,100,221,0.35);
+      flex-shrink:0;
+    }
+    header h1{font-size:1em;font-weight:700;white-space:nowrap;}
+    .header-right{display:flex;align-items:center;gap:8px;}
+    .btn-logout{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:5px 12px;border-radius:20px;font-size:0.74em;font-family:'Poppins',sans-serif;font-weight:600;cursor:pointer;}
+    .btn-logout:hover{background:rgba(255,80,80,0.25);}
+    /* hamburger – only on mobile */
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;}
+    .hamburger span{width:20px;height:2px;background:#fff;border-radius:2px;transition:all 0.2s;}
+
+    /* ── DESKTOP NAV (hidden on mobile) ── */
+    .desktop-nav{display:flex;flex-wrap:wrap;gap:5px;}
+    .desktop-nav button{
+      background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);
+      color:#fff;padding:5px 11px;border-radius:20px;font-size:0.72em;
+      font-family:'Poppins',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;
+    }
+    .desktop-nav button:hover,.desktop-nav button.active{background:rgba(255,255,255,0.28);border-color:rgba(255,255,255,0.55);}
+
+    /* ── LAYOUT ── */
+    .layout{display:flex;flex:1;position:relative;}
+
+    /* ── SIDEBAR (desktop) ── */
+    .sidebar{
+      width:200px;background:#fff;
+      border-right:1px solid rgba(20,100,221,0.08);
+      padding:12px 0;flex-shrink:0;
+      overflow-y:auto;
+    }
+    .sb-section{font-size:0.67em;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue);padding:12px 16px 4px;}
+    .sb-item{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:9px 16px;font-size:0.82em;color:#555;font-weight:500;
+      cursor:pointer;transition:background 0.15s;gap:6px;
+    }
+    .sb-item:hover{background:var(--blue-bg);}
+    .sb-item.active{background:var(--blue-bg);color:var(--blue);font-weight:600;border-left:3px solid var(--blue);}
+    .sb-badge{background:#e74c3c;color:#fff;font-size:0.68em;padding:1px 6px;border-radius:99px;font-weight:700;margin-left:auto;}
+
+    /* ── MOBILE SIDEBAR OVERLAY ── */
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;backdrop-filter:blur(2px);}
+    .sidebar-overlay.open{display:block;}
+    .sidebar-drawer{
+      position:fixed;top:0;left:-240px;width:240px;height:100%;
+      background:#fff;z-index:401;transition:left 0.28s cubic-bezier(.4,0,.2,1);
+      overflow-y:auto;padding:16px 0 80px;
+      box-shadow:4px 0 20px rgba(0,0,0,0.15);
+    }
+    .sidebar-drawer.open{left:0;}
+    .drawer-header{padding:10px 16px 14px;border-bottom:2px solid var(--blue-bg);margin-bottom:4px;}
+    .drawer-header h2{font-size:0.95em;font-weight:700;color:var(--blue);}
+    .drawer-header p{font-size:0.72em;color:var(--gray);}
+
+    /* ── BOTTOM NAV (mobile only) ── */
+    .bottom-nav{
+      display:none;
+      position:fixed;bottom:0;left:0;right:0;
+      height:var(--bottom-nav-h);
+      background:#fff;
+      border-top:1px solid rgba(20,100,221,0.12);
+      z-index:300;
+      box-shadow:0 -4px 16px rgba(20,100,221,0.1);
+    }
+    .bottom-nav-inner{
+      display:flex;height:100%;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .bottom-nav-inner::-webkit-scrollbar{display:none;}
+    .bn-item{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      min-width:60px;flex:1;gap:3px;cursor:pointer;
+      padding:6px 4px;transition:background 0.15s;
+      border:none;background:none;font-family:'Poppins',sans-serif;
+      position:relative;
+    }
+    .bn-item.active{background:var(--blue-bg);}
+    .bn-item.active .bn-icon{color:var(--blue);}
+    .bn-item.active .bn-label{color:var(--blue);font-weight:600;}
+    .bn-icon{font-size:1.3em;color:#999;line-height:1;}
+    .bn-label{font-size:0.58em;color:#999;font-weight:500;white-space:nowrap;}
+    .bn-dot{
+      position:absolute;top:6px;right:calc(50% - 18px);
+      width:7px;height:7px;background:#e74c3c;border-radius:50%;
+      border:1.5px solid #fff;
+    }
+
+    /* ── MAIN ── */
+    .main{flex:1;padding:16px;overflow-x:hidden;min-width:0;}
     .page{display:none;}
     .page.active{display:block;}
-    .page-title{font-size:1.1em;font-weight:700;color:#1464dd;margin-bottom:16px;}
-    /* STATS GRID */
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
-    .stat-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);}
-    .stat-label{font-size:0.75em;font-weight:600;color:#888;margin-bottom:4px;}
-    .stat-val{font-size:1.6em;font-weight:700;color:#1464dd;}
-    .stat-sub{font-size:0.72em;color:#aaa;margin-top:2px;}
-    /* CARDS */
-    .card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);margin-bottom:16px;animation:fadeIn 0.3s ease;}
+    .page-title{font-size:1.05em;font-weight:700;color:var(--blue);margin-bottom:14px;}
+
+    /* ── STATS GRID ── */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+    .stat-card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);}
+    .stat-label{font-size:0.72em;font-weight:600;color:#888;margin-bottom:3px;}
+    .stat-val{font-size:1.5em;font-weight:700;color:var(--blue);}
+    .stat-sub{font-size:0.7em;color:#aaa;margin-top:2px;}
+
+    /* ── CARDS ── */
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);margin-bottom:14px;animation:fadeIn 0.3s ease;}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f4ff;}
-    .card-title{font-size:0.95em;font-weight:700;color:#1464dd;}
-    /* TABLE */
-    .tbl{width:100%;border-collapse:collapse;}
-    .tbl th{text-align:left;font-size:0.74em;font-weight:700;color:#888;padding:6px 8px;border-bottom:2px solid #f0f4ff;}
-    .tbl td{font-size:0.82em;color:#333;padding:8px 8px;border-bottom:1px solid #f0f4ff;vertical-align:middle;}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--blue-bg);}
+    .card-title{font-size:0.92em;font-weight:700;color:var(--blue);}
+
+    /* ── DESKTOP TABLE ── */
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;}
+    .tbl{width:100%;border-collapse:collapse;min-width:500px;}
+    .tbl th{text-align:left;font-size:0.72em;font-weight:700;color:#888;padding:7px 8px;border-bottom:2px solid var(--blue-bg);white-space:nowrap;}
+    .tbl td{font-size:0.8em;color:#333;padding:9px 8px;border-bottom:1px solid var(--blue-bg);vertical-align:middle;}
     .tbl tr:last-child td{border-bottom:none;}
-    .tbl tr:hover td{background:#f5f8ff;}
-    /* BADGES */
-    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72em;font-weight:700;}
-    .b-active{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
-    .b-pending{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
-    .b-suspended{background:#fff0f0;color:#c0392b;border:1px solid #ffcccc;}
+    .tbl tr:hover td{background:#f8faff;}
+
+    /* ── MOBILE CARD-ROWS (for bookings / users / payments) ── */
+    .m-card-list{display:none;flex-direction:column;gap:10px;}
+    .m-card{background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(20,100,221,0.1);box-shadow:0 2px 10px rgba(20,100,221,0.07);}
+    .m-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .m-card-name{font-weight:700;font-size:0.88em;color:#1a1a2e;}
+    .m-card-sub{font-size:0.74em;color:var(--gray);margin-top:1px;}
+    .m-card-fields{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;margin-bottom:10px;}
+    .m-card-field{font-size:0.76em;}
+    .m-card-field span{display:block;color:var(--gray);font-size:0.85em;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+    .m-card-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+    /* ── BADGES ── */
+    .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:0.7em;font-weight:700;}
+    .b-active{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+    .b-pending{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);}
+    .b-suspended{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
     .b-expelled{background:#1a1a2e;color:#fff;}
-    .b-paid{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
-    .b-unpaid{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
-    .b-verified{background:#e6f0ff;color:#1464dd;border:1px solid #c5d5f5;}
+    .b-paid{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+    .b-unpaid{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);}
+    .b-verified{background:#e6f0ff;color:var(--blue);border:1px solid #c5d5f5;}
     .b-unverified{background:#f5f5f5;color:#888;border:1px solid #ddd;}
-    /* BUTTONS */
-    .btn{padding:5px 11px;border-radius:7px;font-size:0.76em;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;border:none;transition:all 0.18s;}
-    .btn-blue{background:#1464dd;color:#fff;}
-    .btn-blue:hover{background:#0d47a1;}
-    .btn-red{background:#fff0f0;color:#c0392b;border:1px solid #ffcccc;}
+
+    /* ── BUTTONS ── */
+    .btn{padding:6px 12px;border-radius:8px;font-size:0.76em;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;border:none;transition:all 0.18s;touch-action:manipulation;}
+    .btn-blue{background:var(--blue);color:#fff;}
+    .btn-blue:hover{background:var(--blue-dark);}
+    .btn-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
     .btn-red:hover{background:#ffe0e0;}
-    .btn-green{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
+    .btn-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
     .btn-green:hover{background:#d0f5e0;}
-    .btn-gray{background:#f0f4ff;color:#1464dd;border:1px solid #c5d5f5;}
+    .btn-gray{background:var(--blue-bg);color:var(--blue);border:1px solid #c5d5f5;}
     .btn-gray:hover{background:#e0eaff;}
-    .btn-orange{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
+    .btn-orange{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);}
     .btn-orange:hover{background:#ffe8cc;}
-    /* FORM */
+
+    /* ── FORM ── */
     .form-group{margin-bottom:12px;}
     .form-group label{display:block;font-size:0.78em;font-weight:600;color:#444;margin-bottom:4px;}
-    .form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 11px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.86em;outline:none;transition:border-color 0.2s;color:#333;}
-    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#1464dd;box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.9em;outline:none;transition:border-color 0.2s;color:#333;-webkit-appearance:none;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
     .form-group textarea{resize:vertical;min-height:80px;}
-    /* MODAL */
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center;padding:16px;}
+
+    /* ── MODAL ── */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:flex-end;padding:0;}
     .modal.open{display:flex;}
-    .modal-box{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:420px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,0.25);animation:slideUp 0.25s ease;}
-    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-    .modal-box h2{font-size:1em;font-weight:700;color:#1464dd;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f4ff;}
-    .modal-close{position:absolute;top:12px;right:14px;background:#f0f4ff;border:none;width:26px;height:26px;border-radius:50%;font-size:0.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
+    .modal-box{
+      background:#fff;border-radius:20px 20px 0 0;padding:24px 20px;
+      width:100%;max-width:480px;margin:0 auto;
+      position:relative;box-shadow:0 -10px 40px rgba(0,0,0,0.2);
+      animation:slideUp 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    .modal-box h2{font-size:1em;font-weight:700;color:var(--blue);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--blue-bg);}
+    .modal-close{position:absolute;top:12px;right:14px;background:var(--blue-bg);border:none;width:28px;height:28px;border-radius:50%;font-size:0.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
     .modal-close:hover{background:#dde3f0;}
-    /* ALERT */
-    .alert{padding:12px 14px;border-radius:8px;font-size:0.82em;margin-bottom:12px;line-height:1.6;}
-    .alert-info{background:#f0f4ff;border-left:4px solid #1464dd;color:#1464dd;border-radius:0;}
-    .alert-success{background:#f0fff6;border-left:4px solid #27ae60;color:#1a6e3a;border-radius:0;}
-    .alert-warning{background:#fff5e6;border-left:4px solid #f39c12;color:#b35c00;border-radius:0;}
-    .alert-danger{background:#fff0f0;border-left:4px solid #e74c3c;color:#c0392b;border-radius:0;}
-    /* TWO COL */
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-    /* MSG ITEM */
-    .msg-item{padding:10px 0;border-bottom:1px solid #f0f4ff;}
+    .modal-handle{width:36px;height:4px;background:#dde3f0;border-radius:2px;margin:0 auto 16px;display:block;}
+
+    /* ── ALERT ── */
+    .alert{padding:11px 13px;font-size:0.81em;margin-bottom:12px;line-height:1.6;}
+    .alert-info{background:var(--blue-bg);border-left:4px solid var(--blue);color:var(--blue);}
+    .alert-success{background:#f0fff6;border-left:4px solid var(--green);color:#1a6e3a;}
+    .alert-warning{background:var(--orange-bg);border-left:4px solid #f39c12;color:var(--orange);}
+    .alert-danger{background:var(--red-bg);border-left:4px solid #e74c3c;color:var(--red);}
+
+    /* ── TWO COL ── */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+    /* ── MSG ITEM ── */
+    .msg-item{padding:10px 0;border-bottom:1px solid var(--blue-bg);}
     .msg-item:last-child{border-bottom:none;}
     .msg-user{font-weight:700;color:#1a1a2e;font-size:0.84em;}
-    .msg-email{font-size:0.75em;color:#888;}
+    .msg-email{font-size:0.74em;color:#888;}
     .msg-text{color:#555;font-size:0.82em;margin:4px 0 6px;}
-    .msg-reply{background:#e6f9ee;border-left:3px solid #27ae60;padding:6px 10px;border-radius:0;font-size:0.8em;color:#1a6e3a;margin-top:4px;}
-    /* REPLY TEXTAREA */
-    .reply-area{width:100%;padding:7px 10px;border:1.5px solid #dde3f0;border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.8em;resize:vertical;min-height:55px;outline:none;margin-top:6px;}
-    .reply-area:focus{border-color:#1464dd;}
-    /* CAR ROW */
-    .car-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f4ff;font-size:0.83em;}
+    .msg-reply{background:var(--green-bg);border-left:3px solid var(--green);padding:6px 10px;font-size:0.8em;color:#1a6e3a;margin-top:4px;}
+
+    /* ── REPLY AREA ── */
+    .reply-area{width:100%;padding:8px 11px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.82em;resize:vertical;min-height:60px;outline:none;margin-top:6px;}
+    .reply-area:focus{border-color:var(--blue);}
+
+    /* ── CAR ROW ── */
+    .car-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--blue-bg);font-size:0.84em;}
     .car-row:last-child{border-bottom:none;}
-    /* SEARCH */
-    .search-bar{width:100%;padding:8px 12px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.84em;outline:none;margin-bottom:12px;}
-    .search-bar:focus{border-color:#1464dd;box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
-    /* EMPTY */
-    .empty{text-align:center;padding:28px;color:#aaa;font-size:0.85em;}
-    /* LOGIN */
-    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f0f4ff;}
-    .login-box{background:#fff;padding:32px 28px;border-radius:14px;box-shadow:0 3px 16px rgba(20,100,221,0.12);border:1px solid rgba(20,100,221,0.08);width:90%;max-width:360px;}
-    .login-box h2{text-align:center;color:#1464dd;font-size:1.2em;font-weight:700;margin-bottom:6px;}
-    .login-box p{text-align:center;color:#888;font-size:0.8em;margin-bottom:20px;}
-    /* RESPONSIVE */
-    @media(max-width:700px){
-      header{flex-direction:column;gap:8px;}
-      .layout{flex-direction:column;}
-      .sidebar{width:100%;min-height:auto;display:flex;flex-wrap:wrap;padding:8px;}
-      .sb-section{display:none;}
-      .sb-item{padding:5px 10px;font-size:0.75em;border-radius:20px;border:1px solid rgba(20,100,221,0.15);}
-      .sb-item.active{border-left:none;border:1px solid #1464dd;}
+
+    /* ── SEARCH BAR ── */
+    .search-bar{width:100%;padding:9px 13px;border:1.5px solid #dde3f0;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.85em;outline:none;margin-bottom:12px;-webkit-appearance:none;}
+    .search-bar:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
+
+    /* ── EMPTY ── */
+    .empty{text-align:center;padding:26px;color:#aaa;font-size:0.84em;}
+
+    /* ── LOGIN ── */
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--blue-bg);padding:16px;}
+    .login-box{background:#fff;padding:28px 24px;border-radius:16px;box-shadow:0 3px 16px rgba(20,100,221,0.12);border:1px solid rgba(20,100,221,0.08);width:100%;max-width:340px;}
+    .login-box h2{text-align:center;color:var(--blue);font-size:1.2em;font-weight:700;margin-bottom:4px;}
+    .login-box p{text-align:center;color:#888;font-size:0.79em;margin-bottom:20px;}
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE — MOBILE BREAKPOINTS
+    ═══════════════════════════════════════ */
+
+    /* tablet – collapse sidebar into drawer */
+    @media(max-width:900px){
+      .sidebar{display:none;}
+      .desktop-nav{display:none;}
+      .hamburger{display:flex;}
+      .bottom-nav{display:flex;}
+      .main{padding:14px 12px 80px;}
       .two-col{grid-template-columns:1fr;}
-      .stats-grid{grid-template-columns:repeat(2,1fr);}
+
+      /* on mobile show card-list, hide table */
+      .desktop-tbl-wrap{display:none;}
+      .m-card-list{display:flex;}
+    }
+
+    /* very small phones */
+    @media(max-width:400px){
+      .stats-grid{grid-template-columns:1fr 1fr;}
+      .m-card-fields{grid-template-columns:1fr;}
+      header h1{font-size:0.88em;}
     }
   </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
 <div id="loginScreen" class="login-wrap">
   <div class="login-box">
     <h2>Admin Login</h2>
     <p>Waliko Car Hire — Admin Panel</p>
     <div class="form-group">
       <label>Admin Password</label>
-      <input type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <input type="password" id="adminPass" placeholder="Enter admin password" required onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <div id="loginErr" style="display:none;" class="alert alert-danger">Incorrect password.</div>
-    <button class="btn btn-blue" style="width:100%;padding:10px;font-size:0.9em;margin-top:4px;" onclick="doLogin()">Login</button>
+    <button class="btn btn-blue" style="width:100%;padding:11px;font-size:0.92em;margin-top:4px;" onclick="doLogin()">Login</button>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ══════════════════ ADMIN PANEL ══════════════════ -->
 <div id="adminPanel" style="display:none;flex-direction:column;min-height:100vh;">
 
-<header>
-  <h1>Waliko Car Hire — Admin</h1>
-  <nav>
-    <button class="active" onclick="showPage('overview',this)">Overview</button>
-    <button onclick="showPage('users',this)">Users</button>
-    <button onclick="showPage('bookings',this)">Bookings</button>
-    <button onclick="showPage('payments',this)">Payments</button>
-    <button onclick="showPage('cars',this)">Cars</button>
-    <button onclick="showPage('help',this)">Help <span id="helpBadgeNav"></span></button>
-    <button onclick="showPage('feedback',this)">Feedback</button>
-    <button onclick="showPage('appeals',this)">Appeals</button>
-    <button onclick="showPage('updates',this)">Updates</button>
-    <button class="danger" onclick="adminLogout()">Logout</button>
-  </nav>
-</header>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="hamburger" onclick="toggleDrawer()" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <h1>Waliko — Admin</h1>
+    </div>
+    <div class="header-right">
+      <nav class="desktop-nav">
+        <button class="active" onclick="showPage('overview',this)">Overview</button>
+        <button onclick="showPage('users',this)">Users</button>
+        <button onclick="showPage('bookings',this)">Bookings</button>
+        <button onclick="showPage('payments',this)">Payments</button>
+        <button onclick="showPage('cars',this)">Cars</button>
+        <button onclick="showPage('help',this)">Help <span id="helpBadgeNav"></span></button>
+        <button onclick="showPage('feedback',this)">Feedback</button>
+        <button onclick="showPage('appeals',this)">Appeals</button>
+        <button onclick="showPage('updates',this)">Updates</button>
+      </nav>
+      <button class="btn-logout" onclick="adminLogout()">Logout</button>
+    </div>
+  </header>
 
-<div class="layout">
-  <div class="sidebar">
+  <!-- MOBILE SIDEBAR DRAWER -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleDrawer()"></div>
+  <div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="drawer-header">
+      <h2>Waliko Car Hire</h2>
+      <p>Admin Panel</p>
+    </div>
     <div class="sb-section">Dashboard</div>
-    <div class="sb-item active" onclick="showPage('overview',null,this)">Overview</div>
-
+    <div class="sb-item active" onclick="showPage('overview',null,this);toggleDrawer();">🏠 Overview</div>
     <div class="sb-section">Users</div>
-    <div class="sb-item" onclick="showPage('users',null,this)">All Users <span class="sb-badge" id="sbUserCount"></span></div>
-    <div class="sb-item" onclick="showPage('suspended',null,this)">Suspended</div>
-    <div class="sb-item" onclick="showPage('updates',null,this)">Update Requests <span class="sb-badge" id="sbUpdateCount"></span></div>
-    <div class="sb-item" onclick="showPage('appeals',null,this)">Appeals</div>
-
+    <div class="sb-item" onclick="showPage('users',null,this);toggleDrawer();">👥 All Users <span class="sb-badge" id="sbUserCountD"></span></div>
+    <div class="sb-item" onclick="showPage('suspended',null,this);toggleDrawer();">🚫 Suspended</div>
+    <div class="sb-item" onclick="showPage('updates',null,this);toggleDrawer();">📝 Update Requests <span class="sb-badge" id="sbUpdateCountD"></span></div>
+    <div class="sb-item" onclick="showPage('appeals',null,this);toggleDrawer();">⚖️ Appeals</div>
     <div class="sb-section">Operations</div>
-    <div class="sb-item" onclick="showPage('bookings',null,this)">Bookings</div>
-    <div class="sb-item" onclick="showPage('payments',null,this)">Payments</div>
-    <div class="sb-item" onclick="showPage('cars',null,this)">Car Fleet</div>
-
+    <div class="sb-item" onclick="showPage('bookings',null,this);toggleDrawer();">📋 Bookings</div>
+    <div class="sb-item" onclick="showPage('payments',null,this);toggleDrawer();">💳 Payments</div>
+    <div class="sb-item" onclick="showPage('cars',null,this);toggleDrawer();">🚗 Car Fleet</div>
     <div class="sb-section">Support</div>
-    <div class="sb-item" onclick="showPage('help',null,this)">Help Messages <span class="sb-badge" id="sbHelpCount"></span></div>
-    <div class="sb-item" onclick="showPage('feedback',null,this)">Feedback</div>
+    <div class="sb-item" onclick="showPage('help',null,this);toggleDrawer();">💬 Help Messages <span class="sb-badge" id="sbHelpCountD"></span></div>
+    <div class="sb-item" onclick="showPage('feedback',null,this);toggleDrawer();">⭐ Feedback</div>
+    <div style="padding:20px 16px 4px;"><button class="btn btn-red" style="width:100%;padding:10px;" onclick="adminLogout()">Logout</button></div>
   </div>
 
-  <div class="main">
+  <div class="layout">
 
-    <!-- ===== OVERVIEW ===== -->
-    <div class="page active" id="page-overview">
-      <div class="page-title">Admin Overview</div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-val" id="ov-users">0</div><div class="stat-sub">registered accounts</div></div>
-        <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-val" id="ov-bookings">0</div><div class="stat-sub">all time</div></div>
-        <div class="stat-card"><div class="stat-label">Paid Bookings</div><div class="stat-val" id="ov-paid">0</div><div class="stat-sub">confirmed</div></div>
-        <div class="stat-card"><div class="stat-label">Help Tickets</div><div class="stat-val" id="ov-help">0</div><div class="stat-sub">awaiting reply</div></div>
+    <!-- DESKTOP SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-section">Dashboard</div>
+      <div class="sb-item active" onclick="showPage('overview',null,this)">Overview</div>
+      <div class="sb-section">Users</div>
+      <div class="sb-item" onclick="showPage('users',null,this)">All Users <span class="sb-badge" id="sbUserCount"></span></div>
+      <div class="sb-item" onclick="showPage('suspended',null,this)">Suspended</div>
+      <div class="sb-item" onclick="showPage('updates',null,this)">Update Requests <span class="sb-badge" id="sbUpdateCount"></span></div>
+      <div class="sb-item" onclick="showPage('appeals',null,this)">Appeals</div>
+      <div class="sb-section">Operations</div>
+      <div class="sb-item" onclick="showPage('bookings',null,this)">Bookings</div>
+      <div class="sb-item" onclick="showPage('payments',null,this)">Payments</div>
+      <div class="sb-item" onclick="showPage('cars',null,this)">Car Fleet</div>
+      <div class="sb-section">Support</div>
+      <div class="sb-item" onclick="showPage('help',null,this)">Help Messages <span class="sb-badge" id="sbHelpCount"></span></div>
+      <div class="sb-item" onclick="showPage('feedback',null,this)">Feedback</div>
+    </div>
+
+    <div class="main">
+
+      <!-- ══ OVERVIEW ══ -->
+      <div class="page active" id="page-overview">
+        <div class="page-title">Admin Overview</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-val" id="ov-users">0</div><div class="stat-sub">registered</div></div>
+          <div class="stat-card"><div class="stat-label">Bookings</div><div class="stat-val" id="ov-bookings">0</div><div class="stat-sub">all time</div></div>
+          <div class="stat-card"><div class="stat-label">Paid</div><div class="stat-val" id="ov-paid">0</div><div class="stat-sub">confirmed</div></div>
+          <div class="stat-card"><div class="stat-label">Help Tickets</div><div class="stat-val" id="ov-help">0</div><div class="stat-sub">awaiting reply</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Users</div></div>
+            <div class="tbl-wrap"><table class="tbl" id="ov-users-tbl"><thead><tr><th>Username</th><th>Email</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Bookings</div></div>
+            <div class="tbl-wrap"><table class="tbl" id="ov-bookings-tbl"><thead><tr><th>Car</th><th>Customer</th><th>Payment</th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Unread Help</div></div>
+            <div id="ov-help-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Feedback</div></div>
+            <div id="ov-feedback-list"></div>
+          </div>
+        </div>
       </div>
-      <div class="two-col">
-        <div class="card">
-          <div class="card-header"><div class="card-title">Recent Users</div></div>
-          <table class="tbl" id="ov-users-tbl">
-            <thead><tr><th>Username</th><th>Email</th><th>Status</th></tr></thead>
+
+      <!-- ══ USERS ══ -->
+      <div class="page" id="page-users">
+        <div class="page-title">All Users</div>
+        <input class="search-bar" id="userSearch" placeholder="🔍  Search by username or email..." oninput="renderUsers()"/>
+        <!-- desktop table -->
+        <div class="card desktop-tbl-wrap">
+          <div class="tbl-wrap"><table class="tbl" id="usersTbl">
+            <thead><tr><th>Username</th><th>Email</th><th>Phone</th><th>Gender</th><th>Verified</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody></tbody>
-          </table>
+          </table></div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Recent Bookings</div></div>
-          <table class="tbl" id="ov-bookings-tbl">
-            <thead><tr><th>Car</th><th>Customer</th><th>Payment</th></tr></thead>
+        <!-- mobile cards -->
+        <div class="m-card-list" id="usersMCards"></div>
+      </div>
+
+      <!-- ══ SUSPENDED ══ -->
+      <div class="page" id="page-suspended">
+        <div class="page-title">Suspended / Expelled Users</div>
+        <div class="card desktop-tbl-wrap">
+          <div class="tbl-wrap"><table class="tbl" id="suspendedTbl">
+            <thead><tr><th>Username</th><th>Email</th><th>Status</th><th>Reason</th><th>Actions</th></tr></thead>
             <tbody></tbody>
-          </table>
+          </table></div>
         </div>
+        <div class="m-card-list" id="suspendedMCards"></div>
       </div>
-      <div class="two-col">
-        <div class="card">
-          <div class="card-header"><div class="card-title">Unread Help Messages</div></div>
-          <div id="ov-help-list"></div>
+
+      <!-- ══ BOOKINGS ══ -->
+      <div class="page" id="page-bookings">
+        <div class="page-title">All Bookings</div>
+        <input class="search-bar" id="bookingSearch" placeholder="🔍  Search by car, customer or booking ID..." oninput="renderBookings()"/>
+        <div class="card desktop-tbl-wrap">
+          <div class="tbl-wrap"><table class="tbl" id="bookingsTbl">
+            <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>Phone</th><th>Start</th><th>End</th><th>Total</th><th>Payment</th><th>M-Pesa</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Recent Feedback</div></div>
-          <div id="ov-feedback-list"></div>
+        <div class="m-card-list" id="bookingsMCards"></div>
+      </div>
+
+      <!-- ══ PAYMENTS ══ -->
+      <div class="page" id="page-payments">
+        <div class="page-title">Payment Records</div>
+        <div class="stats-grid" style="margin-bottom:14px;">
+          <div class="stat-card"><div class="stat-label">Total Paid</div><div class="stat-val" id="pay-total">0</div></div>
+          <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-val" id="pay-revenue" style="font-size:1em;">Ksh 0</div></div>
+          <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="pay-pending">0</div></div>
         </div>
+        <div class="card desktop-tbl-wrap">
+          <div class="tbl-wrap"><table class="tbl" id="paymentsTbl">
+            <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>M-Pesa Ref</th><th>Deposit</th><th>Balance</th><th>Date Paid</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+        <div class="m-card-list" id="paymentsMCards"></div>
       </div>
-    </div>
 
-    <!-- ===== USERS ===== -->
-    <div class="page" id="page-users">
-      <div class="page-title">All Users</div>
-      <input class="search-bar" id="userSearch" placeholder="Search by username or email..." oninput="renderUsers()"/>
-      <div class="card">
-        <table class="tbl" id="usersTbl">
-          <thead><tr><th>Username</th><th>Email</th><th>Phone</th><th>Gender</th><th>Verified</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <!-- ══ CARS ══ -->
+      <div class="page" id="page-cars">
+        <div class="page-title">Car Fleet Status</div>
+        <div class="card" id="carsCard"></div>
       </div>
-    </div>
 
-    <!-- ===== SUSPENDED ===== -->
-    <div class="page" id="page-suspended">
-      <div class="page-title">Suspended / Expelled Users</div>
-      <div class="card">
-        <table class="tbl" id="suspendedTbl">
-          <thead><tr><th>Username</th><th>Email</th><th>Status</th><th>Reason</th><th>Actions</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <!-- ══ HELP ══ -->
+      <div class="page" id="page-help">
+        <div class="page-title">Help Messages</div>
+        <div id="helpList"></div>
       </div>
-    </div>
 
-    <!-- ===== BOOKINGS ===== -->
-    <div class="page" id="page-bookings">
-      <div class="page-title">All Bookings</div>
-      <input class="search-bar" id="bookingSearch" placeholder="Search by car name, customer or booking ID..." oninput="renderBookings()"/>
-      <div class="card">
-        <table class="tbl" id="bookingsTbl">
-          <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>Phone</th><th>Start</th><th>End</th><th>Total</th><th>Payment</th><th>M-Pesa</th><th>Actions</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <!-- ══ FEEDBACK ══ -->
+      <div class="page" id="page-feedback">
+        <div class="page-title">Customer Feedback</div>
+        <div class="card desktop-tbl-wrap">
+          <div class="tbl-wrap"><table class="tbl" id="feedbackTbl">
+            <thead><tr><th>Email</th><th>Rating</th><th>Message</th><th>Time</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+        </div>
+        <div class="m-card-list" id="feedbackMCards"></div>
       </div>
-    </div>
 
-    <!-- ===== PAYMENTS ===== -->
-    <div class="page" id="page-payments">
-      <div class="page-title">Payment Records</div>
-      <div class="stats-grid" style="margin-bottom:16px;">
-        <div class="stat-card"><div class="stat-label">Total Paid</div><div class="stat-val" id="pay-total">0</div></div>
-        <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val" id="pay-revenue" style="font-size:1.1em;">Ksh 0</div></div>
-        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="pay-pending">0</div></div>
+      <!-- ══ APPEALS ══ -->
+      <div class="page" id="page-appeals">
+        <div class="page-title">Deactivation Appeals</div>
+        <div class="card" id="appealsList"></div>
       </div>
-      <div class="card">
-        <table class="tbl" id="paymentsTbl">
-          <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>M-Pesa Ref</th><th>Deposit Paid</th><th>Balance</th><th>Date Paid</th><th>Status</th></tr></thead>
-          <tbody></tbody>
-        </table>
+
+      <!-- ══ UPDATE REQUESTS ══ -->
+      <div class="page" id="page-updates">
+        <div class="page-title">Profile Update Requests</div>
+        <div class="card" id="updatesList"></div>
       </div>
-    </div>
 
-    <!-- ===== CARS ===== -->
-    <div class="page" id="page-cars">
-      <div class="page-title">Car Fleet Status</div>
-      <div class="card" id="carsCard"></div>
-    </div>
+    </div><!-- end main -->
+  </div><!-- end layout -->
 
-    <!-- ===== HELP ===== -->
-    <div class="page" id="page-help">
-      <div class="page-title">Help Messages</div>
-      <div id="helpList"></div>
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav" id="bottomNav">
+    <div class="bottom-nav-inner">
+      <button class="bn-item active" onclick="showPage('overview',null,null,'bn-overview')" id="bn-overview">
+        <span class="bn-icon">🏠</span><span class="bn-label">Overview</span>
+      </button>
+      <button class="bn-item" onclick="showPage('users',null,null,'bn-users')" id="bn-users">
+        <span class="bn-icon">👥</span><span class="bn-label">Users</span>
+      </button>
+      <button class="bn-item" onclick="showPage('bookings',null,null,'bn-bookings')" id="bn-bookings">
+        <span class="bn-icon">📋</span><span class="bn-label">Bookings</span>
+      </button>
+      <button class="bn-item" onclick="showPage('payments',null,null,'bn-payments')" id="bn-payments">
+        <span class="bn-icon">💳</span><span class="bn-label">Payments</span>
+      </button>
+      <button class="bn-item" onclick="showPage('help',null,null,'bn-help')" id="bn-help">
+        <span class="bn-icon">💬</span><span class="bn-label">Help</span>
+        <span class="bn-dot" id="helpDot" style="display:none;"></span>
+      </button>
+      <button class="bn-item" onclick="showPage('cars',null,null,'bn-cars')" id="bn-cars">
+        <span class="bn-icon">🚗</span><span class="bn-label">Cars</span>
+      </button>
+      <button class="bn-item" onclick="toggleDrawer()" id="bn-more">
+        <span class="bn-icon">☰</span><span class="bn-label">More</span>
+      </button>
     </div>
+  </nav>
 
-    <!-- ===== FEEDBACK ===== -->
-    <div class="page" id="page-feedback">
-      <div class="page-title">Customer Feedback</div>
-      <div class="card">
-        <table class="tbl" id="feedbackTbl">
-          <thead><tr><th>Email</th><th>Rating</th><th>Message</th><th>Time</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ===== APPEALS ===== -->
-    <div class="page" id="page-appeals">
-      <div class="page-title">Deactivation Appeals</div>
-      <div class="card" id="appealsList"></div>
-    </div>
-
-    <!-- ===== UPDATE REQUESTS ===== -->
-    <div class="page" id="page-updates">
-      <div class="page-title">Profile Update Requests</div>
-      <div class="card" id="updatesList"></div>
-    </div>
-
-  </div><!-- end main -->
-</div><!-- end layout -->
 </div><!-- end adminPanel -->
 
-<!-- SUSPEND MODAL -->
+<!-- ══ SUSPEND MODAL ══ -->
 <div class="modal" id="suspendModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('suspendModal')">&#x2715;</button>
+    <span class="modal-handle"></span>
+    <button class="modal-close" onclick="closeModal('suspendModal')">✕</button>
     <h2>Suspend User</h2>
     <div class="form-group"><label>Reason / Duration</label><input type="text" id="suspendReason" placeholder="e.g. Violation of terms for 7 days"/></div>
     <div style="display:flex;gap:8px;margin-top:4px;">
-      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmSuspend()">Suspend</button>
-      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('suspendModal')">Cancel</button>
+      <button class="btn btn-red" style="flex:1;padding:11px;" onclick="confirmSuspend()">Suspend</button>
+      <button class="btn btn-gray" style="flex:1;padding:11px;" onclick="closeModal('suspendModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- EXPEL MODAL -->
+<!-- ══ EXPEL MODAL ══ -->
 <div class="modal" id="expelModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('expelModal')">&#x2715;</button>
+    <span class="modal-handle"></span>
+    <button class="modal-close" onclick="closeModal('expelModal')">✕</button>
     <h2>Expel User</h2>
     <div class="alert alert-danger">This is permanent. The user will lose all access.</div>
     <div class="form-group"><label>Reason</label><input type="text" id="expelReason" placeholder="Reason for expulsion"/></div>
     <div style="display:flex;gap:8px;margin-top:4px;">
-      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmExpel()">Expel Permanently</button>
-      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('expelModal')">Cancel</button>
+      <button class="btn btn-red" style="flex:1;padding:11px;" onclick="confirmExpel()">Expel Permanently</button>
+      <button class="btn btn-gray" style="flex:1;padding:11px;" onclick="closeModal('expelModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- DELETE BOOKING MODAL -->
+<!-- ══ DELETE BOOKING MODAL ══ -->
 <div class="modal" id="delBookingModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('delBookingModal')">&#x2715;</button>
+    <span class="modal-handle"></span>
+    <button class="modal-close" onclick="closeModal('delBookingModal')">✕</button>
     <h2>Delete Booking</h2>
     <div class="alert alert-warning">Delete booking <strong id="delBookingId"></strong>? This cannot be undone.</div>
     <div style="display:flex;gap:8px;margin-top:12px;">
-      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmDeleteBooking()">Delete</button>
-      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('delBookingModal')">Cancel</button>
+      <button class="btn btn-red" style="flex:1;padding:11px;" onclick="confirmDeleteBooking()">Delete</button>
+      <button class="btn btn-gray" style="flex:1;padding:11px;" onclick="closeModal('delBookingModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -356,35 +555,82 @@
 const ADMIN_PASSWORD = '2080';
 let targetUserEmail = null;
 let targetBookingId = null;
+let currentPage = 'overview';
 
 /* ── LOGIN ── */
 function doLogin(){
-  const p = document.getElementById('adminPass').value;
+  const input = document.getElementById('adminPass');
+  const err = document.getElementById('loginErr');
+  const p = input.value.trim();
+  if(!p){
+    err.textContent = 'Password is required.';
+    err.style.display = 'block';
+    input.focus();
+    input.style.borderColor = '#e74c3c';
+    return;
+  }
   if(p === ADMIN_PASSWORD){
+    err.style.display = 'none';
+    input.style.borderColor = '';
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'flex';
     loadAll();
   } else {
-    document.getElementById('loginErr').style.display = 'block';
+    err.textContent = 'Incorrect password. Try again.';
+    err.style.display = 'block';
+    input.style.borderColor = '#e74c3c';
+    input.select();
   }
 }
-document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('adminPass').addEventListener('input', function(){
+  // clear error as user types
+  this.style.borderColor = '';
+  document.getElementById('loginErr').style.display = 'none';
+});
+document.getElementById('adminPass').addEventListener('keydown', function(e){
+  if(e.key==='Enter') doLogin();
+});
 
 function adminLogout(){
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('adminPass').value = '';
+  const input = document.getElementById('adminPass');
+  input.value = '';
+  input.style.borderColor = '';
+  document.getElementById('loginErr').style.display = 'none';
+  closeDrawer();
+}
+
+/* ── DRAWER (mobile) ── */
+function toggleDrawer(){
+  const drawer = document.getElementById('sidebarDrawer');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = drawer.classList.contains('open');
+  if(isOpen){ closeDrawer(); } else {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+  }
+}
+function closeDrawer(){
+  document.getElementById('sidebarDrawer').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
 /* ── PAGE NAV ── */
-function showPage(name, navBtn, sbItem){
+function showPage(name, navBtn, sbItem, bnId){
+  currentPage = name;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('nav.desktop-nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  // activate page
   const pg = document.getElementById('page-'+name);
   if(pg) pg.classList.add('active');
   if(sbItem) sbItem.classList.add('active');
   if(navBtn) navBtn.classList.add('active');
+  if(bnId) document.getElementById(bnId)?.classList.add('active');
+  // scroll to top on mobile
+  window.scrollTo({top:0,behavior:'smooth'});
   renderPage(name);
 }
 
@@ -419,21 +665,29 @@ function calcAmounts(b){
 /* ── LOAD ALL ── */
 function loadAll(){
   const users = getUsers();
-  const bookings = getBookings();
   const help = getHelp();
   const unreplied = help.filter(h=>!h.reply||h.reply==='').length;
 
-  document.getElementById('sbUserCount').textContent = users.length || '';
-  document.getElementById('sbHelpCount').textContent = unreplied || '';
-  document.getElementById('helpBadgeNav').textContent = unreplied ? ' ('+unreplied+')' : '';
+  // update all count badges
+  const uc = users.length || '';
+  ['sbUserCount','sbUserCountD'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=uc; });
+  const hc = unreplied || '';
+  ['sbHelpCount','sbHelpCountD'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=hc; });
+  const helpBadgeNav = document.getElementById('helpBadgeNav');
+  if(helpBadgeNav) helpBadgeNav.textContent = unreplied ? ' ('+unreplied+')' : '';
+
+  // help dot on bottom nav
+  const helpDot = document.getElementById('helpDot');
+  if(helpDot) helpDot.style.display = unreplied ? 'block' : 'none';
 
   // update requests count
   let updateCount = 0;
-  users.forEach(u => {
+  users.forEach(u=>{
     const req = localStorage.getItem('updateRequest_'+u.email);
     if(req){ try{ const r=JSON.parse(req); if(r.status==='Pending Approval') updateCount++; }catch(e){} }
   });
-  document.getElementById('sbUpdateCount').textContent = updateCount || '';
+  const upBadge = updateCount||'';
+  ['sbUpdateCount','sbUpdateCountD'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=upBadge; });
 
   renderOverview();
 }
@@ -446,48 +700,44 @@ function renderOverview(){
 
   document.getElementById('ov-users').textContent = users.length;
   document.getElementById('ov-bookings').textContent = bookings.length;
-  document.getElementById('ov-paid').textContent = bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')).length;
+  document.getElementById('ov-paid').textContent = bookings.filter(b=>isPaid(b)).length;
   const unreplied = help.filter(h=>!h.reply||h.reply==='').length;
   document.getElementById('ov-help').textContent = unreplied;
 
-  // Recent users table
   const utbody = document.querySelector('#ov-users-tbl tbody');
   utbody.innerHTML='';
   users.slice(-5).reverse().forEach(u=>{
-    const status = u.status||'Active';
-    const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${u.username||'—'}</td><td style="color:#888">${u.email}</td><td>${statusBadge(status)}</td>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${u.username||'—'}</td><td style="color:#888;font-size:0.9em">${u.email}</td><td>${statusBadge(u.status||'Active')}</td>`;
     utbody.appendChild(tr);
   });
   if(!users.length) utbody.innerHTML='<tr><td colspan="3" class="empty">No users yet</td></tr>';
 
-  // Recent bookings table
   const btbody = document.querySelector('#ov-bookings-tbl tbody');
   btbody.innerHTML='';
   bookings.slice(-5).reverse().forEach(b=>{
-    const paid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
-    const tr = document.createElement('tr');
-    tr.innerHTML=`<td>${b.carName}</td><td>${b.fullName}</td><td>${paid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-pending">Pending</span>'}</td>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${b.carName}</td><td>${b.fullName}</td><td>${isPaid(b)?'<span class="badge b-paid">Paid</span>':'<span class="badge b-pending">Pending</span>'}</td>`;
     btbody.appendChild(tr);
   });
   if(!bookings.length) btbody.innerHTML='<tr><td colspan="3" class="empty">No bookings yet</td></tr>';
 
-  // Help preview
-  const hl = document.getElementById('ov-help-list');
+  const hl=document.getElementById('ov-help-list');
   hl.innerHTML='';
-  const unrepliedHelp = help.filter(h=>!h.reply||h.reply==='').slice(-3);
+  const unrepliedHelp=help.filter(h=>!h.reply||h.reply==='').slice(-3);
   if(!unrepliedHelp.length){ hl.innerHTML='<div class="empty">No pending messages</div>'; }
-  else { unrepliedHelp.forEach(h=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${h.username||h.email}</div><div class="msg-email">${h.email}</div><div class="msg-text">${h.message}</div>`; hl.appendChild(d); }); }
+  else{ unrepliedHelp.forEach(h=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${h.username||h.email}</div><div class="msg-email">${h.email}</div><div class="msg-text">${h.message}</div>`; hl.appendChild(d); }); }
 
-  // Feedback preview
-  const fl = document.getElementById('ov-feedback-list');
+  const fl=document.getElementById('ov-feedback-list');
   fl.innerHTML='';
-  const allFeedback = getAllFeedback();
+  const allFeedback=getAllFeedback();
   if(!allFeedback.length){ fl.innerHTML='<div class="empty">No feedback yet</div>'; }
-  else { allFeedback.slice(-3).forEach(f=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${f.email}</div><div class="msg-text">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)} — ${f.message}</div>`; fl.appendChild(d); }); }
+  else{ allFeedback.slice(-3).forEach(f=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${f.email}</div><div class="msg-text">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)} — ${f.message}</div>`; fl.appendChild(d); }); }
 }
 
-/* ── USERS ── */
+/* ── HELPERS ── */
+function isPaid(b){ return b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A'); }
+
 function statusBadge(s){
   if(s==='Active'||!s) return '<span class="badge b-active">Active</span>';
   if(s==='Suspended') return '<span class="badge b-suspended">Suspended</span>';
@@ -495,161 +745,150 @@ function statusBadge(s){
   return '<span class="badge b-pending">'+s+'</span>';
 }
 
+/* ── USERS ── */
 function renderUsers(){
   const users = getUsers();
   const q = (document.getElementById('userSearch')||{}).value||'';
-  const tbody = document.querySelector('#usersTbl tbody');
-  tbody.innerHTML='';
   const filtered = users.filter(u=>
-    (u.username||'').toLowerCase().includes(q.toLowerCase()) ||
+    (u.username||'').toLowerCase().includes(q.toLowerCase())||
     (u.email||'').toLowerCase().includes(q.toLowerCase())
   );
-  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">No users found</td></tr>'; return; }
-  filtered.forEach((u,i)=>{
-    const status = u.status||'Active';
-    const isSuspended = status==='Suspended'||status==='Expelled';
-    const tr = document.createElement('tr');
-    tr.innerHTML=`
-      <td><strong>${u.username||'—'}</strong></td>
-      <td style="color:#888">${u.email}</td>
-      <td>${u.phone||'—'}</td>
-      <td>${u.gender||'—'}</td>
-      <td>${u.isVerified?'<span class="badge b-verified">Verified</span>':'<span class="badge b-unverified">Unverified</span>'}</td>
+
+  // Desktop table
+  const tbody = document.querySelector('#usersTbl tbody');
+  tbody.innerHTML='';
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">No users found</td></tr>'; }
+  else{ filtered.forEach(u=>{
+    const status=u.status||'Active'; const isSusp=status==='Suspended'||status==='Expelled';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${u.username||'—'}</strong></td>
+      <td style="color:#888">${u.email}</td><td>${u.phone||'—'}</td><td>${u.gender||'—'}</td>
+      <td>${u.isVerified?'<span class="badge b-verified">Verified</span>':'<span class="badge b-unverified">No</span>'}</td>
       <td>${statusBadge(status)}</td>
-      <td>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;">
-          ${!isSuspended?`<button class="btn btn-orange" onclick="openSuspend('${u.email}')">Suspend</button>`:''}
-          ${status==='Suspended'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
-          ${status!=='Expelled'?`<button class="btn btn-red" onclick="openExpel('${u.email}')">Expel</button>`:''}
-          ${status==='Expelled'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
-          <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
-        </div>
-      </td>`;
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${!isSusp?`<button class="btn btn-orange" onclick="openSuspend('${u.email}')">Suspend</button>`:''}
+        ${status==='Suspended'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+        ${status!=='Expelled'?`<button class="btn btn-red" onclick="openExpel('${u.email}')">Expel</button>`:''}
+        ${status==='Expelled'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+        <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
+      </div></td>`;
     tbody.appendChild(tr);
+  }); }
+
+  // Mobile cards
+  const mc = document.getElementById('usersMCards');
+  mc.innerHTML='';
+  if(!filtered.length){ mc.innerHTML='<div class="m-card"><div class="empty">No users found</div></div>'; return; }
+  filtered.forEach(u=>{
+    const status=u.status||'Active'; const isSusp=status==='Suspended'||status==='Expelled';
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`
+      <div class="m-card-top">
+        <div>
+          <div class="m-card-name">${u.username||'—'}</div>
+          <div class="m-card-sub">${u.email}</div>
+        </div>
+        ${statusBadge(status)}
+      </div>
+      <div class="m-card-fields">
+        <div class="m-card-field"><span>Phone</span>${u.phone||'—'}</div>
+        <div class="m-card-field"><span>Gender</span>${u.gender||'—'}</div>
+        <div class="m-card-field"><span>Verified</span>${u.isVerified?'<span class="badge b-verified">Yes</span>':'<span class="badge b-unverified">No</span>'}</div>
+      </div>
+      <div class="m-card-actions">
+        ${!isSusp?`<button class="btn btn-orange" onclick="openSuspend('${u.email}')">Suspend</button>`:''}
+        ${status==='Suspended'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+        ${status!=='Expelled'?`<button class="btn btn-red" onclick="openExpel('${u.email}')">Expel</button>`:''}
+        ${status==='Expelled'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+        <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
+      </div>`;
+    mc.appendChild(card);
   });
-}
-
-function openSuspend(email){ targetUserEmail=email; document.getElementById('suspendReason').value=''; document.getElementById('suspendModal').classList.add('open'); }
-function openExpel(email){ targetUserEmail=email; document.getElementById('expelReason').value=''; document.getElementById('expelModal').classList.add('open'); }
-
-function confirmSuspend(){
-  const reason = document.getElementById('suspendReason').value.trim();
-  if(!reason){ alert('Please enter a reason.'); return; }
-  const users = getUsers();
-  const idx = users.findIndex(u=>u.email===targetUserEmail);
-  if(idx>-1){
-    users[idx].status='Suspended';
-    users[idx].suspendReason=reason;
-    // set legacy keys for signin.html compatibility
-    localStorage.setItem('suspendedEmail', users[idx].email);
-    localStorage.setItem('suspendedPassword', users[idx].password||'');
-    localStorage.setItem('deactivationTime', reason);
-    saveUsers(users);
-    // update currentUser if logged in as that user
-    const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
-    if(cu && cu.email===targetUserEmail){ localStorage.setItem('currentUser', JSON.stringify(users[idx])); }
-  }
-  closeModal('suspendModal');
-  renderUsers();
-  renderSuspended();
-}
-
-function confirmExpel(){
-  const reason = document.getElementById('expelReason').value.trim();
-  if(!reason){ alert('Please enter a reason.'); return; }
-  const users = getUsers();
-  const idx = users.findIndex(u=>u.email===targetUserEmail);
-  if(idx>-1){ users[idx].status='Expelled'; users[idx].expelReason=reason; saveUsers(users); }
-  closeModal('expelModal');
-  renderUsers();
-  renderSuspended();
-}
-
-function restoreUser(email){
-  if(!confirm('Restore this user to Active?')) return;
-  const users = getUsers();
-  const idx = users.findIndex(u=>u.email===email);
-  if(idx>-1){
-    users[idx].status='Active';
-    delete users[idx].suspendReason;
-    delete users[idx].expelReason;
-    // clear legacy suspension keys if same email
-    if(localStorage.getItem('suspendedEmail')===email){
-      localStorage.removeItem('suspendedEmail');
-      localStorage.removeItem('suspendedPassword');
-      localStorage.removeItem('deactivationTime');
-    }
-    saveUsers(users);
-  }
-  renderUsers();
-  renderSuspended();
-}
-
-function deleteUser(email){
-  if(!confirm('Permanently delete user '+email+'? This cannot be undone.')) return;
-  let users = getUsers();
-  users = users.filter(u=>u.email!==email);
-  saveUsers(users);
-  renderUsers();
-  renderOverview();
 }
 
 /* ── SUSPENDED ── */
 function renderSuspended(){
-  const users = getUsers().filter(u=>u.status==='Suspended'||u.status==='Expelled');
-  const tbody = document.querySelector('#suspendedTbl tbody');
+  const users=getUsers().filter(u=>u.status==='Suspended'||u.status==='Expelled');
+  const tbody=document.querySelector('#suspendedTbl tbody');
   tbody.innerHTML='';
-  if(!users.length){ tbody.innerHTML='<tr><td colspan="5" class="empty">No suspended or expelled users</td></tr>'; return; }
+  const mc=document.getElementById('suspendedMCards');
+  mc.innerHTML='';
+
+  if(!users.length){
+    tbody.innerHTML='<tr><td colspan="5" class="empty">No suspended or expelled users</td></tr>';
+    mc.innerHTML='<div class="m-card"><div class="empty">No suspended or expelled users</div></div>';
+    return;
+  }
   users.forEach(u=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML=`
-      <td><strong>${u.username||'—'}</strong></td>
-      <td style="color:#888">${u.email}</td>
-      <td>${statusBadge(u.status)}</td>
-      <td style="color:#888">${u.suspendReason||u.expelReason||'—'}</td>
-      <td><div style="display:flex;gap:4px;">
-        <button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>
-        <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
-      </div></td>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${u.username||'—'}</strong></td><td style="color:#888">${u.email}</td><td>${statusBadge(u.status)}</td><td style="color:#888">${u.suspendReason||u.expelReason||'—'}</td>
+      <td><div style="display:flex;gap:4px;"><button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button><button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button></div></td>`;
     tbody.appendChild(tr);
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`<div class="m-card-top"><div><div class="m-card-name">${u.username||'—'}</div><div class="m-card-sub">${u.email}</div></div>${statusBadge(u.status)}</div>
+      <div class="m-card-fields"><div class="m-card-field"><span>Reason</span>${u.suspendReason||u.expelReason||'—'}</div></div>
+      <div class="m-card-actions"><button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button><button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button></div>`;
+    mc.appendChild(card);
   });
 }
 
 /* ── BOOKINGS ── */
 function renderBookings(){
-  const bookings = getBookings();
-  const q = (document.getElementById('bookingSearch')||{}).value||'';
-  const tbody = document.querySelector('#bookingsTbl tbody');
-  tbody.innerHTML='';
-  const filtered = bookings.filter(b=>
+  const bookings=getBookings();
+  const q=(document.getElementById('bookingSearch')||{}).value||'';
+  const filtered=bookings.filter(b=>
     (b.carName||'').toLowerCase().includes(q.toLowerCase())||
     (b.fullName||'').toLowerCase().includes(q.toLowerCase())||
     (b.bookingId||'').toLowerCase().includes(q.toLowerCase())
   );
-  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="10" class="empty">No bookings found</td></tr>'; return; }
+
+  const tbody=document.querySelector('#bookingsTbl tbody');
+  tbody.innerHTML='';
+  const mc=document.getElementById('bookingsMCards');
+  mc.innerHTML='';
+
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="10" class="empty">No bookings found</td></tr>';
+    mc.innerHTML='<div class="m-card"><div class="empty">No bookings found</div></div>';
+    return;
+  }
   filtered.forEach(b=>{
-    const a = calcAmounts(b);
-    const paid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
-    const tr = document.createElement('tr');
-    tr.innerHTML=`
-      <td style="font-size:0.75em;color:#888">${b.bookingId}</td>
-      <td><strong>${b.carName}</strong></td>
-      <td>${b.fullName}</td>
-      <td>${b.phone||'—'}</td>
-      <td>${b.pickup}</td>
-      <td>${b.endDate}</td>
-      <td>Ksh ${a.total.toLocaleString()}</td>
+    const a=calcAmounts(b); const paid=isPaid(b);
+    // desktop row
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-size:0.73em;color:#888">${b.bookingId}</td>
+      <td><strong>${b.carName}</strong></td><td>${b.fullName}</td><td>${b.phone||'—'}</td>
+      <td>${b.pickup}</td><td>${b.endDate}</td><td>Ksh ${a.total.toLocaleString()}</td>
       <td>${paid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}</td>
-      <td style="color:#27ae60;font-weight:600;font-size:0.8em">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</td>
+      <td style="color:#27ae60;font-weight:600;font-size:0.78em">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</td>
       <td><button class="btn btn-red" onclick="openDeleteBooking('${b.bookingId}')">Delete</button></td>`;
     tbody.appendChild(tr);
+    // mobile card
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`
+      <div class="m-card-top">
+        <div><div class="m-card-name">${b.carName}</div><div class="m-card-sub">${b.fullName} · ${b.phone||'—'}</div></div>
+        ${paid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}
+      </div>
+      <div class="m-card-fields">
+        <div class="m-card-field"><span>Booking ID</span>${b.bookingId}</div>
+        <div class="m-card-field"><span>Total</span>Ksh ${a.total.toLocaleString()}</div>
+        <div class="m-card-field"><span>Start</span>${b.pickup}</div>
+        <div class="m-card-field"><span>End</span>${b.endDate}</div>
+        <div class="m-card-field"><span>M-Pesa Ref</span><span style="color:#27ae60;font-weight:600">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</span></div>
+      </div>
+      <div class="m-card-actions"><button class="btn btn-red" onclick="openDeleteBooking('${b.bookingId}')">Delete Booking</button></div>`;
+    mc.appendChild(card);
   });
 }
 
 function openDeleteBooking(id){ targetBookingId=id; document.getElementById('delBookingId').textContent=id; document.getElementById('delBookingModal').classList.add('open'); }
 function confirmDeleteBooking(){
-  let bookings = getBookings();
-  bookings = bookings.filter(b=>String(b.bookingId)!==String(targetBookingId));
+  let bookings=getBookings();
+  bookings=bookings.filter(b=>String(b.bookingId)!==String(targetBookingId));
   saveBookings(bookings);
   closeModal('delBookingModal');
   renderBookings();
@@ -658,81 +897,93 @@ function confirmDeleteBooking(){
 
 /* ── PAYMENTS ── */
 function renderPayments(){
-  const bookings = getBookings();
-  const paid = bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A'));
-  const pending = bookings.filter(b=>!(b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')));
-  let revenue = 0;
+  const bookings=getBookings();
+  const paid=bookings.filter(b=>isPaid(b));
+  const pending=bookings.filter(b=>!isPaid(b));
+  let revenue=0;
   paid.forEach(b=>{ const a=calcAmounts(b); revenue+=a.deposit; });
-  document.getElementById('pay-total').textContent = paid.length;
-  document.getElementById('pay-revenue').textContent = 'Ksh '+revenue.toLocaleString();
-  document.getElementById('pay-pending').textContent = pending.length;
-  const tbody = document.querySelector('#paymentsTbl tbody');
+  document.getElementById('pay-total').textContent=paid.length;
+  document.getElementById('pay-revenue').textContent='Ksh '+revenue.toLocaleString();
+  document.getElementById('pay-pending').textContent=pending.length;
+
+  const tbody=document.querySelector('#paymentsTbl tbody');
   tbody.innerHTML='';
-  if(!bookings.length){ tbody.innerHTML='<tr><td colspan="8" class="empty">No bookings yet</td></tr>'; return; }
+  const mc=document.getElementById('paymentsMCards');
+  mc.innerHTML='';
+
+  if(!bookings.length){
+    tbody.innerHTML='<tr><td colspan="8" class="empty">No bookings yet</td></tr>';
+    mc.innerHTML='<div class="m-card"><div class="empty">No bookings yet</div></div>';
+    return;
+  }
   [...paid,...pending].forEach(b=>{
-    const a = calcAmounts(b);
-    const isPaid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
-    const tr = document.createElement('tr');
-    tr.innerHTML=`
-      <td style="font-size:0.75em;color:#888">${b.bookingId}</td>
-      <td>${b.carName}</td>
-      <td>${b.fullName}</td>
+    const a=calcAmounts(b); const p=isPaid(b);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-size:0.73em;color:#888">${b.bookingId}</td><td>${b.carName}</td><td>${b.fullName}</td>
       <td style="color:#27ae60;font-weight:600">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</td>
-      <td>${isPaid?'Ksh '+a.deposit.toLocaleString():'—'}</td>
-      <td>Ksh ${a.balance.toLocaleString()}</td>
+      <td>${p?'Ksh '+a.deposit.toLocaleString():'—'}</td><td>Ksh ${a.balance.toLocaleString()}</td>
       <td style="color:#888">${b.paidAt||'—'}</td>
-      <td>${isPaid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}</td>`;
+      <td>${p?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}</td>`;
     tbody.appendChild(tr);
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`
+      <div class="m-card-top">
+        <div><div class="m-card-name">${b.carName}</div><div class="m-card-sub">${b.fullName}</div></div>
+        ${p?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}
+      </div>
+      <div class="m-card-fields">
+        <div class="m-card-field"><span>Booking ID</span>${b.bookingId}</div>
+        <div class="m-card-field"><span>M-Pesa Ref</span><span style="color:#27ae60;font-weight:600">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</span></div>
+        <div class="m-card-field"><span>Deposit</span>${p?'Ksh '+a.deposit.toLocaleString():'—'}</div>
+        <div class="m-card-field"><span>Balance</span>Ksh ${a.balance.toLocaleString()}</div>
+        <div class="m-card-field"><span>Date Paid</span>${b.paidAt||'—'}</div>
+      </div>`;
+    mc.appendChild(card);
   });
 }
 
 /* ── CARS ── */
-const carsList = [
-  'Toyota Vitz','Toyota Prado TX','Subaru Forester','Toyota Harrier','Suzuki Alto',
-  'Toyota Premio','Toyota Sienta','Toyota Succeed','Mercedes Benz C200','Range Rover Sport',
-  'Mazda CX-5','Honda CR-V','Hyundai Tucson','Subaru Impreza','Toyota Wish',
-  'Toyota Prado TXL','Toyota Axio','Toyota Fielder','Toyota Prado TXG'
-];
+const carsList=['Toyota Vitz','Toyota Prado TX','Subaru Forester','Toyota Harrier','Suzuki Alto','Toyota Premio','Toyota Sienta','Toyota Succeed','Mercedes Benz C200','Range Rover Sport','Mazda CX-5','Honda CR-V','Hyundai Tucson','Subaru Impreza','Toyota Wish','Toyota Prado TXL','Toyota Axio','Toyota Fielder','Toyota Prado TXG'];
 
 function renderCars(){
-  const bookings = getBookings();
-  const paidCars = new Set(bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')).map(b=>b.carName));
-  const pendingCars = new Set(bookings.filter(b=>!(b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A'))).map(b=>b.carName));
-  const div = document.getElementById('carsCard');
+  const bookings=getBookings();
+  const paidCars=new Set(bookings.filter(b=>isPaid(b)).map(b=>b.carName));
+  const pendingCars=new Set(bookings.filter(b=>!isPaid(b)).map(b=>b.carName));
+  const div=document.getElementById('carsCard');
   div.innerHTML='';
   carsList.forEach(car=>{
-    const isBooked = paidCars.has(car);
-    const isPending = pendingCars.has(car);
-    const row = document.createElement('div');
+    const isBooked=paidCars.has(car); const pend=pendingCars.has(car);
+    const row=document.createElement('div');
     row.className='car-row';
     row.innerHTML=`<span><strong>${car}</strong></span>
-      <span>${isBooked?'<span class="badge b-suspended">Booked</span>':isPending?'<span class="badge b-pending">Pending</span>':'<span class="badge b-active">Available</span>'}</span>`;
+      <span>${isBooked?'<span class="badge b-suspended">Booked</span>':pend?'<span class="badge b-pending">Pending</span>':'<span class="badge b-active">Available</span>'}</span>`;
     div.appendChild(row);
   });
 }
 
 /* ── HELP ── */
 function renderHelp(){
-  const help = getHelp();
-  const div = document.getElementById('helpList');
+  const help=getHelp();
+  const div=document.getElementById('helpList');
   div.innerHTML='';
   if(!help.length){ div.innerHTML='<div class="card"><div class="empty">No help messages yet</div></div>'; return; }
   help.forEach((h,i)=>{
-    const card = document.createElement('div');
+    const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
       <div class="card-header">
         <div>
           <div class="card-title">${h.username||'User'}</div>
-          <div style="font-size:0.78em;color:#888">${h.email} &nbsp;|&nbsp; ${h.phone||'—'}</div>
+          <div style="font-size:0.76em;color:#888">${h.email}&nbsp;|&nbsp;${h.phone||'—'}</div>
         </div>
-        ${h.reply?'<span class="badge b-active">Replied</span>':'<span class="badge b-pending">Awaiting Reply</span>'}
+        ${h.reply?'<span class="badge b-active">Replied</span>':'<span class="badge b-pending">Awaiting</span>'}
       </div>
       <div class="msg-text" style="margin-bottom:10px;font-size:0.88em;color:#333">${h.message}</div>
       ${h.reply?`<div class="msg-reply"><strong>Admin reply:</strong> ${h.reply}</div>`:''}
       <textarea class="reply-area" id="replyArea${i}" placeholder="Type your reply here...">${h.reply||''}</textarea>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn btn-blue" onclick="sendReply(${i})">Send Reply</button>
+        <button class="btn btn-blue" style="flex:1;" onclick="sendReply(${i})">Send Reply</button>
         <button class="btn btn-red" onclick="deleteHelpMsg(${i})">Delete</button>
       </div>`;
     div.appendChild(card);
@@ -740,51 +991,43 @@ function renderHelp(){
 }
 
 function sendReply(i){
-  const reply = document.getElementById('replyArea'+i).value.trim();
+  const reply=document.getElementById('replyArea'+i).value.trim();
   if(!reply){ alert('Please type a reply.'); return; }
-  const help = getHelp();
-  help[i].reply = reply;
-  saveHelp(help);
-  renderHelp();
-  loadAll();
+  const help=getHelp(); help[i].reply=reply; saveHelp(help); renderHelp(); loadAll();
 }
-
 function deleteHelpMsg(i){
   if(!confirm('Delete this message?')) return;
-  const help = getHelp();
-  help.splice(i,1);
-  saveHelp(help);
-  renderHelp();
-  loadAll();
+  const help=getHelp(); help.splice(i,1); saveHelp(help); renderHelp(); loadAll();
 }
 
 /* ── FEEDBACK ── */
 function getAllFeedback(){
   const all=[];
-  // collect all userFeedback keys — they're stored per user as 'userFeedback'
-  // but the system stores one per localStorage. Collect from all users.
-  const users = getUsers();
-  users.forEach(u=>{
-    const key='userFeedback_'+u.email;
-    try{ const f=JSON.parse(localStorage.getItem(key)); if(f) all.push(f); }catch(e){}
-  });
-  // also grab the single 'userFeedback' key (the app only stores one)
-  try{
-    const f=JSON.parse(localStorage.getItem('userFeedback'));
-    if(f && !all.find(a=>a.email===f.email)) all.push(f);
-  }catch(e){}
+  const users=getUsers();
+  users.forEach(u=>{ const key='userFeedback_'+u.email; try{ const f=JSON.parse(localStorage.getItem(key)); if(f) all.push(f); }catch(e){} });
+  try{ const f=JSON.parse(localStorage.getItem('userFeedback')); if(f&&!all.find(a=>a.email===f.email)) all.push(f); }catch(e){}
   return all;
 }
 
 function renderFeedback(){
-  const feedbacks = getAllFeedback();
-  const tbody = document.querySelector('#feedbackTbl tbody');
+  const feedbacks=getAllFeedback();
+  const tbody=document.querySelector('#feedbackTbl tbody');
   tbody.innerHTML='';
-  if(!feedbacks.length){ tbody.innerHTML='<tr><td colspan="4" class="empty">No feedback submitted yet</td></tr>'; return; }
+  const mc=document.getElementById('feedbackMCards');
+  mc.innerHTML='';
+  if(!feedbacks.length){
+    tbody.innerHTML='<tr><td colspan="4" class="empty">No feedback yet</td></tr>';
+    mc.innerHTML='<div class="m-card"><div class="empty">No feedback submitted yet</div></div>';
+    return;
+  }
   feedbacks.forEach(f=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${f.email}</td><td>${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</td><td>${f.message}</td><td style="color:#888">${f.time||'—'}</td>`;
     tbody.appendChild(tr);
+    const card=document.createElement('div');
+    card.className='m-card';
+    card.innerHTML=`<div class="m-card-top"><div><div class="m-card-name">${f.email}</div><div class="m-card-sub">${f.time||'—'}</div></div><span style="font-size:1.1em">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</span></div><div style="font-size:0.84em;color:#555;margin-top:4px">${f.message}</div>`;
+    mc.appendChild(card);
   });
 }
 
@@ -792,29 +1035,24 @@ function renderFeedback(){
 function renderAppeals(){
   const div=document.getElementById('appealsList');
   div.innerHTML='';
-  // appeals stored as 'appeal_{email}'
-  const users=getUsers();
-  let found=false;
+  const users=getUsers(); let found=false;
   users.forEach(u=>{
-    const key='appeal_'+u.email;
-    let ap=null;
-    try{ ap=JSON.parse(localStorage.getItem(key)); }catch(e){}
+    let ap=null; try{ ap=JSON.parse(localStorage.getItem('appeal_'+u.email)); }catch(e){}
     if(ap){
       found=true;
       const card=document.createElement('div');
       card.style.cssText='padding:12px 0;border-bottom:1px solid #f0f4ff;';
-      card.innerHTML=`
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-          <div>
-            <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username||u.email}</div>
-            <div style="font-size:0.78em;color:#888">${u.email}</div>
-            <div style="font-size:0.82em;color:#555;margin-top:4px">${ap.reason||ap.message||'No reason provided'}</div>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-green" onclick="restoreUser('${u.email}');localStorage.removeItem('appeal_${u.email}');renderAppeals();">Approve (Restore)</button>
-            <button class="btn btn-red" onclick="localStorage.removeItem('appeal_${u.email}');renderAppeals();">Dismiss</button>
-          </div>
-        </div>`;
+      card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username||u.email}</div>
+          <div style="font-size:0.76em;color:#888">${u.email}</div>
+          <div style="font-size:0.82em;color:#555;margin-top:4px">${ap.reason||ap.message||'No reason provided'}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-green" onclick="restoreUser('${u.email}');localStorage.removeItem('appeal_${u.email}');renderAppeals();">Approve</button>
+          <button class="btn btn-red" onclick="localStorage.removeItem('appeal_${u.email}');renderAppeals();">Dismiss</button>
+        </div>
+      </div>`;
       div.appendChild(card);
     }
   });
@@ -825,29 +1063,25 @@ function renderAppeals(){
 function renderUpdates(){
   const div=document.getElementById('updatesList');
   div.innerHTML='';
-  const users=getUsers();
-  let found=false;
+  const users=getUsers(); let found=false;
   users.forEach(u=>{
-    const key='updateRequest_'+u.email;
-    let req=null;
-    try{ req=JSON.parse(localStorage.getItem(key)); }catch(e){}
-    if(req && req.status==='Pending Approval'){
+    let req=null; try{ req=JSON.parse(localStorage.getItem('updateRequest_'+u.email)); }catch(e){}
+    if(req&&req.status==='Pending Approval'){
       found=true;
       const card=document.createElement('div');
       card.style.cssText='padding:14px 0;border-bottom:1px solid #f0f4ff;';
-      card.innerHTML=`
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
-          <div>
-            <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username} → ${req.username}</div>
-            <div style="font-size:0.78em;color:#888">${u.email} → ${req.email}</div>
-            <div style="font-size:0.78em;color:#888">Phone: ${u.phone} → ${req.phone} &nbsp;|&nbsp; Gender: ${u.gender} → ${req.gender}</div>
-            <div style="font-size:0.8em;color:#555;margin-top:4px"><strong>Reason:</strong> ${req.reason}</div>
-          </div>
-          <div style="display:flex;gap:6px;flex-shrink:0;">
-            <button class="btn btn-green" onclick="approveUpdate('${u.email}')">Approve</button>
-            <button class="btn btn-red" onclick="rejectUpdate('${u.email}')">Reject</button>
-          </div>
-        </div>`;
+      card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username} → ${req.username}</div>
+          <div style="font-size:0.76em;color:#888">${u.email} → ${req.email}</div>
+          <div style="font-size:0.76em;color:#888">Phone: ${u.phone} → ${req.phone} | Gender: ${u.gender} → ${req.gender}</div>
+          <div style="font-size:0.8em;color:#555;margin-top:4px"><strong>Reason:</strong> ${req.reason}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
+          <button class="btn btn-green" onclick="approveUpdate('${u.email}')">Approve</button>
+          <button class="btn btn-red" onclick="rejectUpdate('${u.email}')">Reject</button>
+        </div>
+      </div>`;
       div.appendChild(card);
     }
   });
@@ -855,36 +1089,46 @@ function renderUpdates(){
 }
 
 function approveUpdate(email){
-  const users=getUsers();
-  const idx=users.findIndex(u=>u.email===email);
-  const key='updateRequest_'+email;
-  const req=JSON.parse(localStorage.getItem(key)||'null');
-  if(idx>-1 && req){
-    users[idx].username=req.username;
-    users[idx].email=req.email;
-    users[idx].phone=req.phone;
-    users[idx].gender=req.gender;
-    saveUsers(users);
-    localStorage.removeItem(key);
-    // also update new key if email changed
-    if(req.email!==email) localStorage.removeItem('updateRequest_'+req.email);
-    alert('Update approved successfully.');
-  }
-  renderUpdates();
-  loadAll();
+  const users=getUsers(); const idx=users.findIndex(u=>u.email===email);
+  const key='updateRequest_'+email; const req=JSON.parse(localStorage.getItem(key)||'null');
+  if(idx>-1&&req){ users[idx].username=req.username; users[idx].email=req.email; users[idx].phone=req.phone; users[idx].gender=req.gender; saveUsers(users); localStorage.removeItem(key); if(req.email!==email) localStorage.removeItem('updateRequest_'+req.email); alert('Update approved.'); }
+  renderUpdates(); loadAll();
 }
+function rejectUpdate(email){ localStorage.removeItem('updateRequest_'+email); alert('Update request rejected.'); renderUpdates(); loadAll(); }
 
-function rejectUpdate(email){
-  localStorage.removeItem('updateRequest_'+email);
-  alert('Update request rejected.');
-  renderUpdates();
-  loadAll();
+/* ── USER ACTIONS ── */
+function openSuspend(email){ targetUserEmail=email; document.getElementById('suspendReason').value=''; document.getElementById('suspendModal').classList.add('open'); }
+function openExpel(email){ targetUserEmail=email; document.getElementById('expelReason').value=''; document.getElementById('expelModal').classList.add('open'); }
+
+function confirmSuspend(){
+  const reason=document.getElementById('suspendReason').value.trim();
+  if(!reason){ alert('Please enter a reason.'); return; }
+  const users=getUsers(); const idx=users.findIndex(u=>u.email===targetUserEmail);
+  if(idx>-1){ users[idx].status='Suspended'; users[idx].suspendReason=reason; localStorage.setItem('suspendedEmail',users[idx].email); localStorage.setItem('suspendedPassword',users[idx].password||''); localStorage.setItem('deactivationTime',reason); saveUsers(users); const cu=JSON.parse(localStorage.getItem('currentUser')||'null'); if(cu&&cu.email===targetUserEmail){ localStorage.setItem('currentUser',JSON.stringify(users[idx])); } }
+  closeModal('suspendModal'); renderUsers(); renderSuspended();
+}
+function confirmExpel(){
+  const reason=document.getElementById('expelReason').value.trim();
+  if(!reason){ alert('Please enter a reason.'); return; }
+  const users=getUsers(); const idx=users.findIndex(u=>u.email===targetUserEmail);
+  if(idx>-1){ users[idx].status='Expelled'; users[idx].expelReason=reason; saveUsers(users); }
+  closeModal('expelModal'); renderUsers(); renderSuspended();
+}
+function restoreUser(email){
+  if(!confirm('Restore this user to Active?')) return;
+  const users=getUsers(); const idx=users.findIndex(u=>u.email===email);
+  if(idx>-1){ users[idx].status='Active'; delete users[idx].suspendReason; delete users[idx].expelReason; if(localStorage.getItem('suspendedEmail')===email){ localStorage.removeItem('suspendedEmail'); localStorage.removeItem('suspendedPassword'); localStorage.removeItem('deactivationTime'); } saveUsers(users); }
+  renderUsers(); renderSuspended();
+}
+function deleteUser(email){
+  if(!confirm('Permanently delete user '+email+'?')) return;
+  let users=getUsers(); users=users.filter(u=>u.email!==email); saveUsers(users); renderUsers(); renderOverview();
 }
 
 /* ── MODAL HELPERS ── */
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal').forEach(m=>{
-  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); });
 });
 </script>
 </body>
