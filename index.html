@@ -1,76 +1,891 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Security Alert</title>
-
-<style>
-body{
-    background:black;
-    color:#ff1a1a;
-    font-family: Consolas, monospace;
-    text-align:center;
-    padding-top:100px;
-}
-
-.box{
-    border:3px solid red;
-    width:600px;
-    margin:auto;
-    padding:40px;
-    background:#0a0a0a;
-    box-shadow:0 0 30px red;
-}
-
-h1{
-    font-size:40px;
-    animation: blink 1s infinite;
-}
-
-@keyframes blink{
-    50%{opacity:0.2;}
-}
-
-.scan{
-    color:#00ff00;
-    margin-top:20px;
-    font-size:18px;
-}
-
-.reveal{
-    display:none;
-    margin-top:30px;
-    font-size:28px;
-    color:white;
-}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – Waliko Car Hire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins',sans-serif;background:#f0f4ff;color:#333;min-height:100vh;display:flex;flex-direction:column;}
+    /* HEADER */
+    header{background:linear-gradient(135deg,#1464dd 0%,#0d47a1 100%);color:#fff;padding:10px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;z-index:200;box-shadow:0 3px 15px rgba(20,100,221,0.35);}
+    header h1{font-size:1.1em;font-weight:700;}
+    nav{display:flex;flex-wrap:wrap;gap:6px;}
+    nav button{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:6px 12px;border-radius:25px;font-size:0.76em;font-family:'Poppins',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;}
+    nav button:hover,nav button.active{background:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.6);}
+    nav button.danger{border-color:rgba(255,100,100,0.4);color:#ffaaaa;}
+    nav button.danger:hover{background:rgba(255,80,80,0.2);}
+    /* LAYOUT */
+    .layout{display:flex;flex:1;}
+    /* SIDEBAR */
+    .sidebar{width:200px;background:#fff;border-right:1px solid rgba(20,100,221,0.08);padding:12px 0;flex-shrink:0;min-height:calc(100vh - 47px);}
+    .sb-section{font-size:0.68em;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#1464dd;padding:12px 16px 4px;}
+    .sb-item{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:0.82em;color:#555;font-weight:500;cursor:pointer;transition:background 0.15s;gap:6px;}
+    .sb-item:hover{background:#f0f4ff;}
+    .sb-item.active{background:#f0f4ff;color:#1464dd;font-weight:600;border-left:3px solid #1464dd;}
+    .sb-badge{background:#e74c3c;color:#fff;font-size:0.7em;padding:1px 6px;border-radius:99px;font-weight:700;margin-left:auto;}
+    /* MAIN */
+    .main{flex:1;padding:20px;overflow-x:hidden;}
+    .page{display:none;}
+    .page.active{display:block;}
+    .page-title{font-size:1.1em;font-weight:700;color:#1464dd;margin-bottom:16px;}
+    /* STATS GRID */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
+    .stat-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);}
+    .stat-label{font-size:0.75em;font-weight:600;color:#888;margin-bottom:4px;}
+    .stat-val{font-size:1.6em;font-weight:700;color:#1464dd;}
+    .stat-sub{font-size:0.72em;color:#aaa;margin-top:2px;}
+    /* CARDS */
+    .card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 16px rgba(20,100,221,0.09);border:1px solid rgba(20,100,221,0.07);margin-bottom:16px;animation:fadeIn 0.3s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f4ff;}
+    .card-title{font-size:0.95em;font-weight:700;color:#1464dd;}
+    /* TABLE */
+    .tbl{width:100%;border-collapse:collapse;}
+    .tbl th{text-align:left;font-size:0.74em;font-weight:700;color:#888;padding:6px 8px;border-bottom:2px solid #f0f4ff;}
+    .tbl td{font-size:0.82em;color:#333;padding:8px 8px;border-bottom:1px solid #f0f4ff;vertical-align:middle;}
+    .tbl tr:last-child td{border-bottom:none;}
+    .tbl tr:hover td{background:#f5f8ff;}
+    /* BADGES */
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72em;font-weight:700;}
+    .b-active{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
+    .b-pending{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
+    .b-suspended{background:#fff0f0;color:#c0392b;border:1px solid #ffcccc;}
+    .b-expelled{background:#1a1a2e;color:#fff;}
+    .b-paid{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
+    .b-unpaid{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
+    .b-verified{background:#e6f0ff;color:#1464dd;border:1px solid #c5d5f5;}
+    .b-unverified{background:#f5f5f5;color:#888;border:1px solid #ddd;}
+    /* BUTTONS */
+    .btn{padding:5px 11px;border-radius:7px;font-size:0.76em;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;border:none;transition:all 0.18s;}
+    .btn-blue{background:#1464dd;color:#fff;}
+    .btn-blue:hover{background:#0d47a1;}
+    .btn-red{background:#fff0f0;color:#c0392b;border:1px solid #ffcccc;}
+    .btn-red:hover{background:#ffe0e0;}
+    .btn-green{background:#e6f9ee;color:#1e8449;border:1px solid #a8ddb9;}
+    .btn-green:hover{background:#d0f5e0;}
+    .btn-gray{background:#f0f4ff;color:#1464dd;border:1px solid #c5d5f5;}
+    .btn-gray:hover{background:#e0eaff;}
+    .btn-orange{background:#fff5e6;color:#b35c00;border:1px solid #ffc87a;}
+    .btn-orange:hover{background:#ffe8cc;}
+    /* FORM */
+    .form-group{margin-bottom:12px;}
+    .form-group label{display:block;font-size:0.78em;font-weight:600;color:#444;margin-bottom:4px;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 11px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.86em;outline:none;transition:border-color 0.2s;color:#333;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#1464dd;box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
+    .form-group textarea{resize:vertical;min-height:80px;}
+    /* MODAL */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center;padding:16px;}
+    .modal.open{display:flex;}
+    .modal-box{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:420px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,0.25);animation:slideUp 0.25s ease;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    .modal-box h2{font-size:1em;font-weight:700;color:#1464dd;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f4ff;}
+    .modal-close{position:absolute;top:12px;right:14px;background:#f0f4ff;border:none;width:26px;height:26px;border-radius:50%;font-size:0.9em;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;}
+    .modal-close:hover{background:#dde3f0;}
+    /* ALERT */
+    .alert{padding:12px 14px;border-radius:8px;font-size:0.82em;margin-bottom:12px;line-height:1.6;}
+    .alert-info{background:#f0f4ff;border-left:4px solid #1464dd;color:#1464dd;border-radius:0;}
+    .alert-success{background:#f0fff6;border-left:4px solid #27ae60;color:#1a6e3a;border-radius:0;}
+    .alert-warning{background:#fff5e6;border-left:4px solid #f39c12;color:#b35c00;border-radius:0;}
+    .alert-danger{background:#fff0f0;border-left:4px solid #e74c3c;color:#c0392b;border-radius:0;}
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    /* MSG ITEM */
+    .msg-item{padding:10px 0;border-bottom:1px solid #f0f4ff;}
+    .msg-item:last-child{border-bottom:none;}
+    .msg-user{font-weight:700;color:#1a1a2e;font-size:0.84em;}
+    .msg-email{font-size:0.75em;color:#888;}
+    .msg-text{color:#555;font-size:0.82em;margin:4px 0 6px;}
+    .msg-reply{background:#e6f9ee;border-left:3px solid #27ae60;padding:6px 10px;border-radius:0;font-size:0.8em;color:#1a6e3a;margin-top:4px;}
+    /* REPLY TEXTAREA */
+    .reply-area{width:100%;padding:7px 10px;border:1.5px solid #dde3f0;border-radius:7px;font-family:'Poppins',sans-serif;font-size:0.8em;resize:vertical;min-height:55px;outline:none;margin-top:6px;}
+    .reply-area:focus{border-color:#1464dd;}
+    /* CAR ROW */
+    .car-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f4ff;font-size:0.83em;}
+    .car-row:last-child{border-bottom:none;}
+    /* SEARCH */
+    .search-bar{width:100%;padding:8px 12px;border:1.5px solid #dde3f0;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.84em;outline:none;margin-bottom:12px;}
+    .search-bar:focus{border-color:#1464dd;box-shadow:0 0 0 3px rgba(20,100,221,0.1);}
+    /* EMPTY */
+    .empty{text-align:center;padding:28px;color:#aaa;font-size:0.85em;}
+    /* LOGIN */
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f0f4ff;}
+    .login-box{background:#fff;padding:32px 28px;border-radius:14px;box-shadow:0 3px 16px rgba(20,100,221,0.12);border:1px solid rgba(20,100,221,0.08);width:90%;max-width:360px;}
+    .login-box h2{text-align:center;color:#1464dd;font-size:1.2em;font-weight:700;margin-bottom:6px;}
+    .login-box p{text-align:center;color:#888;font-size:0.8em;margin-bottom:20px;}
+    /* RESPONSIVE */
+    @media(max-width:700px){
+      header{flex-direction:column;gap:8px;}
+      .layout{flex-direction:column;}
+      .sidebar{width:100%;min-height:auto;display:flex;flex-wrap:wrap;padding:8px;}
+      .sb-section{display:none;}
+      .sb-item{padding:5px 10px;font-size:0.75em;border-radius:20px;border:1px solid rgba(20,100,221,0.15);}
+      .sb-item.active{border-left:none;border:1px solid #1464dd;}
+      .two-col{grid-template-columns:1fr;}
+      .stats-grid{grid-template-columns:repeat(2,1fr);}
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="box">
-
-<h1>⚠ SECURITY WARNING ⚠</h1>
-
-<p class="scan">Scanning device activity...</p>
-<p class="scan">Checking network packets...</p>
-<p class="scan">Analyzing system logs...</p>
-
-<div class="reveal" id="reveal" style="color: red;">
-dear mahat id no 423780*3 you are under control this seesion is stored on your phone permanently💀⚠️
-<br><br>
-hacked
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <p>Waliko Car Hire — Admin Panel</p>
+    <div class="form-group">
+      <label>Admin Password</label>
+      <input type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div id="loginErr" style="display:none;" class="alert alert-danger">Incorrect password.</div>
+    <button class="btn btn-blue" style="width:100%;padding:10px;font-size:0.9em;margin-top:4px;" onclick="doLogin()">Login</button>
+  </div>
 </div>
 
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;flex-direction:column;min-height:100vh;">
+
+<header>
+  <h1>Waliko Car Hire — Admin</h1>
+  <nav>
+    <button class="active" onclick="showPage('overview',this)">Overview</button>
+    <button onclick="showPage('users',this)">Users</button>
+    <button onclick="showPage('bookings',this)">Bookings</button>
+    <button onclick="showPage('payments',this)">Payments</button>
+    <button onclick="showPage('cars',this)">Cars</button>
+    <button onclick="showPage('help',this)">Help <span id="helpBadgeNav"></span></button>
+    <button onclick="showPage('feedback',this)">Feedback</button>
+    <button onclick="showPage('appeals',this)">Appeals</button>
+    <button onclick="showPage('updates',this)">Updates</button>
+    <button class="danger" onclick="adminLogout()">Logout</button>
+  </nav>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-section">Dashboard</div>
+    <div class="sb-item active" onclick="showPage('overview',null,this)">Overview</div>
+
+    <div class="sb-section">Users</div>
+    <div class="sb-item" onclick="showPage('users',null,this)">All Users <span class="sb-badge" id="sbUserCount"></span></div>
+    <div class="sb-item" onclick="showPage('suspended',null,this)">Suspended</div>
+    <div class="sb-item" onclick="showPage('updates',null,this)">Update Requests <span class="sb-badge" id="sbUpdateCount"></span></div>
+    <div class="sb-item" onclick="showPage('appeals',null,this)">Appeals</div>
+
+    <div class="sb-section">Operations</div>
+    <div class="sb-item" onclick="showPage('bookings',null,this)">Bookings</div>
+    <div class="sb-item" onclick="showPage('payments',null,this)">Payments</div>
+    <div class="sb-item" onclick="showPage('cars',null,this)">Car Fleet</div>
+
+    <div class="sb-section">Support</div>
+    <div class="sb-item" onclick="showPage('help',null,this)">Help Messages <span class="sb-badge" id="sbHelpCount"></span></div>
+    <div class="sb-item" onclick="showPage('feedback',null,this)">Feedback</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ===== OVERVIEW ===== -->
+    <div class="page active" id="page-overview">
+      <div class="page-title">Admin Overview</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-val" id="ov-users">0</div><div class="stat-sub">registered accounts</div></div>
+        <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-val" id="ov-bookings">0</div><div class="stat-sub">all time</div></div>
+        <div class="stat-card"><div class="stat-label">Paid Bookings</div><div class="stat-val" id="ov-paid">0</div><div class="stat-sub">confirmed</div></div>
+        <div class="stat-card"><div class="stat-label">Help Tickets</div><div class="stat-val" id="ov-help">0</div><div class="stat-sub">awaiting reply</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Users</div></div>
+          <table class="tbl" id="ov-users-tbl">
+            <thead><tr><th>Username</th><th>Email</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Bookings</div></div>
+          <table class="tbl" id="ov-bookings-tbl">
+            <thead><tr><th>Car</th><th>Customer</th><th>Payment</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Unread Help Messages</div></div>
+          <div id="ov-help-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Feedback</div></div>
+          <div id="ov-feedback-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USERS ===== -->
+    <div class="page" id="page-users">
+      <div class="page-title">All Users</div>
+      <input class="search-bar" id="userSearch" placeholder="Search by username or email..." oninput="renderUsers()"/>
+      <div class="card">
+        <table class="tbl" id="usersTbl">
+          <thead><tr><th>Username</th><th>Email</th><th>Phone</th><th>Gender</th><th>Verified</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== SUSPENDED ===== -->
+    <div class="page" id="page-suspended">
+      <div class="page-title">Suspended / Expelled Users</div>
+      <div class="card">
+        <table class="tbl" id="suspendedTbl">
+          <thead><tr><th>Username</th><th>Email</th><th>Status</th><th>Reason</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== BOOKINGS ===== -->
+    <div class="page" id="page-bookings">
+      <div class="page-title">All Bookings</div>
+      <input class="search-bar" id="bookingSearch" placeholder="Search by car name, customer or booking ID..." oninput="renderBookings()"/>
+      <div class="card">
+        <table class="tbl" id="bookingsTbl">
+          <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>Phone</th><th>Start</th><th>End</th><th>Total</th><th>Payment</th><th>M-Pesa</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PAYMENTS ===== -->
+    <div class="page" id="page-payments">
+      <div class="page-title">Payment Records</div>
+      <div class="stats-grid" style="margin-bottom:16px;">
+        <div class="stat-card"><div class="stat-label">Total Paid</div><div class="stat-val" id="pay-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val" id="pay-revenue" style="font-size:1.1em;">Ksh 0</div></div>
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="pay-pending">0</div></div>
+      </div>
+      <div class="card">
+        <table class="tbl" id="paymentsTbl">
+          <thead><tr><th>Booking ID</th><th>Car</th><th>Customer</th><th>M-Pesa Ref</th><th>Deposit Paid</th><th>Balance</th><th>Date Paid</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CARS ===== -->
+    <div class="page" id="page-cars">
+      <div class="page-title">Car Fleet Status</div>
+      <div class="card" id="carsCard"></div>
+    </div>
+
+    <!-- ===== HELP ===== -->
+    <div class="page" id="page-help">
+      <div class="page-title">Help Messages</div>
+      <div id="helpList"></div>
+    </div>
+
+    <!-- ===== FEEDBACK ===== -->
+    <div class="page" id="page-feedback">
+      <div class="page-title">Customer Feedback</div>
+      <div class="card">
+        <table class="tbl" id="feedbackTbl">
+          <thead><tr><th>Email</th><th>Rating</th><th>Message</th><th>Time</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== APPEALS ===== -->
+    <div class="page" id="page-appeals">
+      <div class="page-title">Deactivation Appeals</div>
+      <div class="card" id="appealsList"></div>
+    </div>
+
+    <!-- ===== UPDATE REQUESTS ===== -->
+    <div class="page" id="page-updates">
+      <div class="page-title">Profile Update Requests</div>
+      <div class="card" id="updatesList"></div>
+    </div>
+
+  </div><!-- end main -->
+</div><!-- end layout -->
+</div><!-- end adminPanel -->
+
+<!-- SUSPEND MODAL -->
+<div class="modal" id="suspendModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('suspendModal')">&#x2715;</button>
+    <h2>Suspend User</h2>
+    <div class="form-group"><label>Reason / Duration</label><input type="text" id="suspendReason" placeholder="e.g. Violation of terms for 7 days"/></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmSuspend()">Suspend</button>
+      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('suspendModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPEL MODAL -->
+<div class="modal" id="expelModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('expelModal')">&#x2715;</button>
+    <h2>Expel User</h2>
+    <div class="alert alert-danger">This is permanent. The user will lose all access.</div>
+    <div class="form-group"><label>Reason</label><input type="text" id="expelReason" placeholder="Reason for expulsion"/></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmExpel()">Expel Permanently</button>
+      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('expelModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE BOOKING MODAL -->
+<div class="modal" id="delBookingModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('delBookingModal')">&#x2715;</button>
+    <h2>Delete Booking</h2>
+    <div class="alert alert-warning">Delete booking <strong id="delBookingId"></strong>? This cannot be undone.</div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-red" style="flex:1;padding:9px;" onclick="confirmDeleteBooking()">Delete</button>
+      <button class="btn btn-gray" style="flex:1;padding:9px;" onclick="closeModal('delBookingModal')">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
+const ADMIN_PASSWORD = '2080';
+let targetUserEmail = null;
+let targetBookingId = null;
 
-setTimeout(function(){
-    document.getElementById("reveal").style.display="block";
-},1000);
+/* ── LOGIN ── */
+function doLogin(){
+  const p = document.getElementById('adminPass').value;
+  if(p === ADMIN_PASSWORD){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'flex';
+    loadAll();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
+function adminLogout(){
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPass').value = '';
+}
+
+/* ── PAGE NAV ── */
+function showPage(name, navBtn, sbItem){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  const pg = document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  if(sbItem) sbItem.classList.add('active');
+  if(navBtn) navBtn.classList.add('active');
+  renderPage(name);
+}
+
+function renderPage(name){
+  if(name==='overview') renderOverview();
+  else if(name==='users') renderUsers();
+  else if(name==='suspended') renderSuspended();
+  else if(name==='bookings') renderBookings();
+  else if(name==='payments') renderPayments();
+  else if(name==='cars') renderCars();
+  else if(name==='help') renderHelp();
+  else if(name==='feedback') renderFeedback();
+  else if(name==='appeals') renderAppeals();
+  else if(name==='updates') renderUpdates();
+}
+
+/* ── DATA HELPERS ── */
+function getUsers(){ return JSON.parse(localStorage.getItem('allUsers')||'[]'); }
+function saveUsers(u){ localStorage.setItem('allUsers', JSON.stringify(u)); }
+function getBookings(){ return JSON.parse(localStorage.getItem('bookings')||'[]'); }
+function saveBookings(b){ localStorage.setItem('bookings', JSON.stringify(b)); }
+function getHelp(){ return JSON.parse(localStorage.getItem('helpMessages')||'[]'); }
+function saveHelp(h){ localStorage.setItem('helpMessages', JSON.stringify(h)); }
+
+function calcAmounts(b){
+  const days = Math.max(1, Math.ceil((new Date(b.endDate)-new Date(b.pickup))/86400000));
+  const total = b.price * days;
+  const deposit = Math.floor(total/2);
+  return {days, total, deposit, balance: total-deposit};
+}
+
+/* ── LOAD ALL ── */
+function loadAll(){
+  const users = getUsers();
+  const bookings = getBookings();
+  const help = getHelp();
+  const unreplied = help.filter(h=>!h.reply||h.reply==='').length;
+
+  document.getElementById('sbUserCount').textContent = users.length || '';
+  document.getElementById('sbHelpCount').textContent = unreplied || '';
+  document.getElementById('helpBadgeNav').textContent = unreplied ? ' ('+unreplied+')' : '';
+
+  // update requests count
+  let updateCount = 0;
+  users.forEach(u => {
+    const req = localStorage.getItem('updateRequest_'+u.email);
+    if(req){ try{ const r=JSON.parse(req); if(r.status==='Pending Approval') updateCount++; }catch(e){} }
+  });
+  document.getElementById('sbUpdateCount').textContent = updateCount || '';
+
+  renderOverview();
+}
+
+/* ── OVERVIEW ── */
+function renderOverview(){
+  const users = getUsers();
+  const bookings = getBookings();
+  const help = getHelp();
+
+  document.getElementById('ov-users').textContent = users.length;
+  document.getElementById('ov-bookings').textContent = bookings.length;
+  document.getElementById('ov-paid').textContent = bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')).length;
+  const unreplied = help.filter(h=>!h.reply||h.reply==='').length;
+  document.getElementById('ov-help').textContent = unreplied;
+
+  // Recent users table
+  const utbody = document.querySelector('#ov-users-tbl tbody');
+  utbody.innerHTML='';
+  users.slice(-5).reverse().forEach(u=>{
+    const status = u.status||'Active';
+    const tr = document.createElement('tr');
+    tr.innerHTML=`<td>${u.username||'—'}</td><td style="color:#888">${u.email}</td><td>${statusBadge(status)}</td>`;
+    utbody.appendChild(tr);
+  });
+  if(!users.length) utbody.innerHTML='<tr><td colspan="3" class="empty">No users yet</td></tr>';
+
+  // Recent bookings table
+  const btbody = document.querySelector('#ov-bookings-tbl tbody');
+  btbody.innerHTML='';
+  bookings.slice(-5).reverse().forEach(b=>{
+    const paid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
+    const tr = document.createElement('tr');
+    tr.innerHTML=`<td>${b.carName}</td><td>${b.fullName}</td><td>${paid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-pending">Pending</span>'}</td>`;
+    btbody.appendChild(tr);
+  });
+  if(!bookings.length) btbody.innerHTML='<tr><td colspan="3" class="empty">No bookings yet</td></tr>';
+
+  // Help preview
+  const hl = document.getElementById('ov-help-list');
+  hl.innerHTML='';
+  const unrepliedHelp = help.filter(h=>!h.reply||h.reply==='').slice(-3);
+  if(!unrepliedHelp.length){ hl.innerHTML='<div class="empty">No pending messages</div>'; }
+  else { unrepliedHelp.forEach(h=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${h.username||h.email}</div><div class="msg-email">${h.email}</div><div class="msg-text">${h.message}</div>`; hl.appendChild(d); }); }
+
+  // Feedback preview
+  const fl = document.getElementById('ov-feedback-list');
+  fl.innerHTML='';
+  const allFeedback = getAllFeedback();
+  if(!allFeedback.length){ fl.innerHTML='<div class="empty">No feedback yet</div>'; }
+  else { allFeedback.slice(-3).forEach(f=>{ const d=document.createElement('div'); d.className='msg-item'; d.innerHTML=`<div class="msg-user">${f.email}</div><div class="msg-text">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)} — ${f.message}</div>`; fl.appendChild(d); }); }
+}
+
+/* ── USERS ── */
+function statusBadge(s){
+  if(s==='Active'||!s) return '<span class="badge b-active">Active</span>';
+  if(s==='Suspended') return '<span class="badge b-suspended">Suspended</span>';
+  if(s==='Expelled') return '<span class="badge b-expelled">Expelled</span>';
+  return '<span class="badge b-pending">'+s+'</span>';
+}
+
+function renderUsers(){
+  const users = getUsers();
+  const q = (document.getElementById('userSearch')||{}).value||'';
+  const tbody = document.querySelector('#usersTbl tbody');
+  tbody.innerHTML='';
+  const filtered = users.filter(u=>
+    (u.username||'').toLowerCase().includes(q.toLowerCase()) ||
+    (u.email||'').toLowerCase().includes(q.toLowerCase())
+  );
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">No users found</td></tr>'; return; }
+  filtered.forEach((u,i)=>{
+    const status = u.status||'Active';
+    const isSuspended = status==='Suspended'||status==='Expelled';
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td><strong>${u.username||'—'}</strong></td>
+      <td style="color:#888">${u.email}</td>
+      <td>${u.phone||'—'}</td>
+      <td>${u.gender||'—'}</td>
+      <td>${u.isVerified?'<span class="badge b-verified">Verified</span>':'<span class="badge b-unverified">Unverified</span>'}</td>
+      <td>${statusBadge(status)}</td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${!isSuspended?`<button class="btn btn-orange" onclick="openSuspend('${u.email}')">Suspend</button>`:''}
+          ${status==='Suspended'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+          ${status!=='Expelled'?`<button class="btn btn-red" onclick="openExpel('${u.email}')">Expel</button>`:''}
+          ${status==='Expelled'?`<button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>`:''}
+          <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openSuspend(email){ targetUserEmail=email; document.getElementById('suspendReason').value=''; document.getElementById('suspendModal').classList.add('open'); }
+function openExpel(email){ targetUserEmail=email; document.getElementById('expelReason').value=''; document.getElementById('expelModal').classList.add('open'); }
+
+function confirmSuspend(){
+  const reason = document.getElementById('suspendReason').value.trim();
+  if(!reason){ alert('Please enter a reason.'); return; }
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===targetUserEmail);
+  if(idx>-1){
+    users[idx].status='Suspended';
+    users[idx].suspendReason=reason;
+    // set legacy keys for signin.html compatibility
+    localStorage.setItem('suspendedEmail', users[idx].email);
+    localStorage.setItem('suspendedPassword', users[idx].password||'');
+    localStorage.setItem('deactivationTime', reason);
+    saveUsers(users);
+    // update currentUser if logged in as that user
+    const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
+    if(cu && cu.email===targetUserEmail){ localStorage.setItem('currentUser', JSON.stringify(users[idx])); }
+  }
+  closeModal('suspendModal');
+  renderUsers();
+  renderSuspended();
+}
+
+function confirmExpel(){
+  const reason = document.getElementById('expelReason').value.trim();
+  if(!reason){ alert('Please enter a reason.'); return; }
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===targetUserEmail);
+  if(idx>-1){ users[idx].status='Expelled'; users[idx].expelReason=reason; saveUsers(users); }
+  closeModal('expelModal');
+  renderUsers();
+  renderSuspended();
+}
+
+function restoreUser(email){
+  if(!confirm('Restore this user to Active?')) return;
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===email);
+  if(idx>-1){
+    users[idx].status='Active';
+    delete users[idx].suspendReason;
+    delete users[idx].expelReason;
+    // clear legacy suspension keys if same email
+    if(localStorage.getItem('suspendedEmail')===email){
+      localStorage.removeItem('suspendedEmail');
+      localStorage.removeItem('suspendedPassword');
+      localStorage.removeItem('deactivationTime');
+    }
+    saveUsers(users);
+  }
+  renderUsers();
+  renderSuspended();
+}
+
+function deleteUser(email){
+  if(!confirm('Permanently delete user '+email+'? This cannot be undone.')) return;
+  let users = getUsers();
+  users = users.filter(u=>u.email!==email);
+  saveUsers(users);
+  renderUsers();
+  renderOverview();
+}
+
+/* ── SUSPENDED ── */
+function renderSuspended(){
+  const users = getUsers().filter(u=>u.status==='Suspended'||u.status==='Expelled');
+  const tbody = document.querySelector('#suspendedTbl tbody');
+  tbody.innerHTML='';
+  if(!users.length){ tbody.innerHTML='<tr><td colspan="5" class="empty">No suspended or expelled users</td></tr>'; return; }
+  users.forEach(u=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td><strong>${u.username||'—'}</strong></td>
+      <td style="color:#888">${u.email}</td>
+      <td>${statusBadge(u.status)}</td>
+      <td style="color:#888">${u.suspendReason||u.expelReason||'—'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-green" onclick="restoreUser('${u.email}')">Restore</button>
+        <button class="btn btn-red" onclick="deleteUser('${u.email}')">Delete</button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── BOOKINGS ── */
+function renderBookings(){
+  const bookings = getBookings();
+  const q = (document.getElementById('bookingSearch')||{}).value||'';
+  const tbody = document.querySelector('#bookingsTbl tbody');
+  tbody.innerHTML='';
+  const filtered = bookings.filter(b=>
+    (b.carName||'').toLowerCase().includes(q.toLowerCase())||
+    (b.fullName||'').toLowerCase().includes(q.toLowerCase())||
+    (b.bookingId||'').toLowerCase().includes(q.toLowerCase())
+  );
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="10" class="empty">No bookings found</td></tr>'; return; }
+  filtered.forEach(b=>{
+    const a = calcAmounts(b);
+    const paid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-size:0.75em;color:#888">${b.bookingId}</td>
+      <td><strong>${b.carName}</strong></td>
+      <td>${b.fullName}</td>
+      <td>${b.phone||'—'}</td>
+      <td>${b.pickup}</td>
+      <td>${b.endDate}</td>
+      <td>Ksh ${a.total.toLocaleString()}</td>
+      <td>${paid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}</td>
+      <td style="color:#27ae60;font-weight:600;font-size:0.8em">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</td>
+      <td><button class="btn btn-red" onclick="openDeleteBooking('${b.bookingId}')">Delete</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openDeleteBooking(id){ targetBookingId=id; document.getElementById('delBookingId').textContent=id; document.getElementById('delBookingModal').classList.add('open'); }
+function confirmDeleteBooking(){
+  let bookings = getBookings();
+  bookings = bookings.filter(b=>String(b.bookingId)!==String(targetBookingId));
+  saveBookings(bookings);
+  closeModal('delBookingModal');
+  renderBookings();
+  renderOverview();
+}
+
+/* ── PAYMENTS ── */
+function renderPayments(){
+  const bookings = getBookings();
+  const paid = bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A'));
+  const pending = bookings.filter(b=>!(b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')));
+  let revenue = 0;
+  paid.forEach(b=>{ const a=calcAmounts(b); revenue+=a.deposit; });
+  document.getElementById('pay-total').textContent = paid.length;
+  document.getElementById('pay-revenue').textContent = 'Ksh '+revenue.toLocaleString();
+  document.getElementById('pay-pending').textContent = pending.length;
+  const tbody = document.querySelector('#paymentsTbl tbody');
+  tbody.innerHTML='';
+  if(!bookings.length){ tbody.innerHTML='<tr><td colspan="8" class="empty">No bookings yet</td></tr>'; return; }
+  [...paid,...pending].forEach(b=>{
+    const a = calcAmounts(b);
+    const isPaid = b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A');
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-size:0.75em;color:#888">${b.bookingId}</td>
+      <td>${b.carName}</td>
+      <td>${b.fullName}</td>
+      <td style="color:#27ae60;font-weight:600">${b.mpesaReceipt&&b.mpesaReceipt!=='N/A'?b.mpesaReceipt:'—'}</td>
+      <td>${isPaid?'Ksh '+a.deposit.toLocaleString():'—'}</td>
+      <td>Ksh ${a.balance.toLocaleString()}</td>
+      <td style="color:#888">${b.paidAt||'—'}</td>
+      <td>${isPaid?'<span class="badge b-paid">Paid</span>':'<span class="badge b-unpaid">Pending</span>'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── CARS ── */
+const carsList = [
+  'Toyota Vitz','Toyota Prado TX','Subaru Forester','Toyota Harrier','Suzuki Alto',
+  'Toyota Premio','Toyota Sienta','Toyota Succeed','Mercedes Benz C200','Range Rover Sport',
+  'Mazda CX-5','Honda CR-V','Hyundai Tucson','Subaru Impreza','Toyota Wish',
+  'Toyota Prado TXL','Toyota Axio','Toyota Fielder','Toyota Prado TXG'
+];
+
+function renderCars(){
+  const bookings = getBookings();
+  const paidCars = new Set(bookings.filter(b=>b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A')).map(b=>b.carName));
+  const pendingCars = new Set(bookings.filter(b=>!(b.paymentStatus==='paid'||(b.mpesaReceipt&&b.mpesaReceipt!=='N/A'))).map(b=>b.carName));
+  const div = document.getElementById('carsCard');
+  div.innerHTML='';
+  carsList.forEach(car=>{
+    const isBooked = paidCars.has(car);
+    const isPending = pendingCars.has(car);
+    const row = document.createElement('div');
+    row.className='car-row';
+    row.innerHTML=`<span><strong>${car}</strong></span>
+      <span>${isBooked?'<span class="badge b-suspended">Booked</span>':isPending?'<span class="badge b-pending">Pending</span>':'<span class="badge b-active">Available</span>'}</span>`;
+    div.appendChild(row);
+  });
+}
+
+/* ── HELP ── */
+function renderHelp(){
+  const help = getHelp();
+  const div = document.getElementById('helpList');
+  div.innerHTML='';
+  if(!help.length){ div.innerHTML='<div class="card"><div class="empty">No help messages yet</div></div>'; return; }
+  help.forEach((h,i)=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <div class="card-header">
+        <div>
+          <div class="card-title">${h.username||'User'}</div>
+          <div style="font-size:0.78em;color:#888">${h.email} &nbsp;|&nbsp; ${h.phone||'—'}</div>
+        </div>
+        ${h.reply?'<span class="badge b-active">Replied</span>':'<span class="badge b-pending">Awaiting Reply</span>'}
+      </div>
+      <div class="msg-text" style="margin-bottom:10px;font-size:0.88em;color:#333">${h.message}</div>
+      ${h.reply?`<div class="msg-reply"><strong>Admin reply:</strong> ${h.reply}</div>`:''}
+      <textarea class="reply-area" id="replyArea${i}" placeholder="Type your reply here...">${h.reply||''}</textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-blue" onclick="sendReply(${i})">Send Reply</button>
+        <button class="btn btn-red" onclick="deleteHelpMsg(${i})">Delete</button>
+      </div>`;
+    div.appendChild(card);
+  });
+}
+
+function sendReply(i){
+  const reply = document.getElementById('replyArea'+i).value.trim();
+  if(!reply){ alert('Please type a reply.'); return; }
+  const help = getHelp();
+  help[i].reply = reply;
+  saveHelp(help);
+  renderHelp();
+  loadAll();
+}
+
+function deleteHelpMsg(i){
+  if(!confirm('Delete this message?')) return;
+  const help = getHelp();
+  help.splice(i,1);
+  saveHelp(help);
+  renderHelp();
+  loadAll();
+}
+
+/* ── FEEDBACK ── */
+function getAllFeedback(){
+  const all=[];
+  // collect all userFeedback keys — they're stored per user as 'userFeedback'
+  // but the system stores one per localStorage. Collect from all users.
+  const users = getUsers();
+  users.forEach(u=>{
+    const key='userFeedback_'+u.email;
+    try{ const f=JSON.parse(localStorage.getItem(key)); if(f) all.push(f); }catch(e){}
+  });
+  // also grab the single 'userFeedback' key (the app only stores one)
+  try{
+    const f=JSON.parse(localStorage.getItem('userFeedback'));
+    if(f && !all.find(a=>a.email===f.email)) all.push(f);
+  }catch(e){}
+  return all;
+}
+
+function renderFeedback(){
+  const feedbacks = getAllFeedback();
+  const tbody = document.querySelector('#feedbackTbl tbody');
+  tbody.innerHTML='';
+  if(!feedbacks.length){ tbody.innerHTML='<tr><td colspan="4" class="empty">No feedback submitted yet</td></tr>'; return; }
+  feedbacks.forEach(f=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${f.email}</td><td>${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</td><td>${f.message}</td><td style="color:#888">${f.time||'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── APPEALS ── */
+function renderAppeals(){
+  const div=document.getElementById('appealsList');
+  div.innerHTML='';
+  // appeals stored as 'appeal_{email}'
+  const users=getUsers();
+  let found=false;
+  users.forEach(u=>{
+    const key='appeal_'+u.email;
+    let ap=null;
+    try{ ap=JSON.parse(localStorage.getItem(key)); }catch(e){}
+    if(ap){
+      found=true;
+      const card=document.createElement('div');
+      card.style.cssText='padding:12px 0;border-bottom:1px solid #f0f4ff;';
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username||u.email}</div>
+            <div style="font-size:0.78em;color:#888">${u.email}</div>
+            <div style="font-size:0.82em;color:#555;margin-top:4px">${ap.reason||ap.message||'No reason provided'}</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-green" onclick="restoreUser('${u.email}');localStorage.removeItem('appeal_${u.email}');renderAppeals();">Approve (Restore)</button>
+            <button class="btn btn-red" onclick="localStorage.removeItem('appeal_${u.email}');renderAppeals();">Dismiss</button>
+          </div>
+        </div>`;
+      div.appendChild(card);
+    }
+  });
+  if(!found) div.innerHTML='<div class="empty">No appeals submitted</div>';
+}
+
+/* ── UPDATE REQUESTS ── */
+function renderUpdates(){
+  const div=document.getElementById('updatesList');
+  div.innerHTML='';
+  const users=getUsers();
+  let found=false;
+  users.forEach(u=>{
+    const key='updateRequest_'+u.email;
+    let req=null;
+    try{ req=JSON.parse(localStorage.getItem(key)); }catch(e){}
+    if(req && req.status==='Pending Approval'){
+      found=true;
+      const card=document.createElement('div');
+      card.style.cssText='padding:14px 0;border-bottom:1px solid #f0f4ff;';
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-weight:700;color:#1a1a2e;font-size:0.88em">${u.username} → ${req.username}</div>
+            <div style="font-size:0.78em;color:#888">${u.email} → ${req.email}</div>
+            <div style="font-size:0.78em;color:#888">Phone: ${u.phone} → ${req.phone} &nbsp;|&nbsp; Gender: ${u.gender} → ${req.gender}</div>
+            <div style="font-size:0.8em;color:#555;margin-top:4px"><strong>Reason:</strong> ${req.reason}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <button class="btn btn-green" onclick="approveUpdate('${u.email}')">Approve</button>
+            <button class="btn btn-red" onclick="rejectUpdate('${u.email}')">Reject</button>
+          </div>
+        </div>`;
+      div.appendChild(card);
+    }
+  });
+  if(!found) div.innerHTML='<div class="empty">No pending update requests</div>';
+}
+
+function approveUpdate(email){
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.email===email);
+  const key='updateRequest_'+email;
+  const req=JSON.parse(localStorage.getItem(key)||'null');
+  if(idx>-1 && req){
+    users[idx].username=req.username;
+    users[idx].email=req.email;
+    users[idx].phone=req.phone;
+    users[idx].gender=req.gender;
+    saveUsers(users);
+    localStorage.removeItem(key);
+    // also update new key if email changed
+    if(req.email!==email) localStorage.removeItem('updateRequest_'+req.email);
+    alert('Update approved successfully.');
+  }
+  renderUpdates();
+  loadAll();
+}
+
+function rejectUpdate(email){
+  localStorage.removeItem('updateRequest_'+email);
+  alert('Update request rejected.');
+  renderUpdates();
+  loadAll();
+}
+
+/* ── MODAL HELPERS ── */
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
 </script>
-
 </body>
 </html>
